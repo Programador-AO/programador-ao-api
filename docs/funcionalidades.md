@@ -14,7 +14,7 @@ Implementação e integração  com [supertokens](https://supertokens.com/)
 
 ### Projectos
 - Nome do projecto
-- Descrição do projecto
+- resumo do projecto
 - Sobre o projecto
 - Redes Sociais
 - Github
