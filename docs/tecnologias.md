@@ -2,13 +2,14 @@
 
 ## Tecnologias
 
-- [NestJS] (https://www.fastify.io/)
-- [Prisma] (https://www.prisma.io/)
-- [TypeScript] (https://www.typescriptlang.org/)
-- [MongoDB] (https://www.mongodb.com/)
-- [Supertokens] (https://supertokens.com/)
-- [Microserviços] (https://microservices.io/)
-- [Insomnia ou outro aplicativo para testar a API] (https://insomnia.rest/download)
+- [NestJS](https://www.fastify.io/)
+- [Prisma](https://www.prisma.io/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [MySQL](https://www.mysql.com/)
+- [Supertokens](https://supertokens.com/)
+- [Microserviços](https://microservices.io/)
+- [Insomnia ou outro aplicativo para testar a API](https://insomnia.rest/download)
+- [Swagger](https://swagger.io/)
 
 ### NestJS
 
@@ -22,9 +23,9 @@ Prisma é uma biblioteca do lado do servidor que ajuda os desenvolvedores a ler 
 
 TypeScript é uma linguagem de programação de código aberto desenvolvida pela Microsoft. É um superconjunto sintático estrito de JavaScript e adiciona tipagem estática opcional à linguagem.
 
-### MongoDB
+### MySQL
 
-MongoDB é um software de banco de dados orientado a documentos livre, de código aberto e multiplataforma, escrito na linguagem C++. Classificado como um programa de banco de dados NoSQL, o MongoDB usa documentos semelhantes a JSON com esquemas.
+O MySQL é um sistema de gerenciamento de banco de dados, que utiliza a linguagem SQL como interface. É atualmente um dos sistemas de gerenciamento de bancos de dados mais populares da Oracle Corporation, com mais de 10 milhões de instalações pelo mundo.
 
 ### Supertokens
 
@@ -37,3 +38,7 @@ Microsserviços é uma abordagem de arquitetura para a criação de aplicações
 ### Insomnia
 
 Insomnia é um framework Open Source para desenvolvimento/teste de API Clients. Ele pode ser usado para envio de requisições REST, SOAP, GraphQ e GRPC. Com esta ferramenta torna-se possível realizar a documentação, automação e com a sua versão CLI tools é possível implementar testes em pipeline.
+
+### Swagger
+
+Swagger é um conjunto de ferramentas para desenvolvedores de API da SmartBear Software e uma especificação anterior na qual a especificação OpenAPI é baseada. Neste projecto foi usado para documentar a API
