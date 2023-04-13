@@ -38,6 +38,14 @@ npm run test:e2e
 npm run test:cov
 ```
 
+## Criar a build
+
+```bash
+# build (pasta: dist)
+npm run build
+
+```
+
 ## Suporte
 
 Programador AO | API é um projeto de código aberto licenciado pelo MIT. Pode crescer graças aos patrocinadores e ao apoio dos incríveis patrocinadores. Se você quiser se juntar a eles, [leia mais aqui](https://programador.ao/sobre-nos).
