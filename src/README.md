@@ -2,6 +2,17 @@
 
 Repositório da [API](http://github.com/Programador-AO/programador-ao-api) da plataforma Programador AO, construído pela comunidade
 
+## Tecnologias
+
+- [NestJS](https://www.fastify.io/)
+- [Prisma](https://www.prisma.io/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [MySQL](https://www.mysql.com/)
+- [Supertokens](https://supertokens.com/)
+- [Microserviços](https://microservices.io/)
+- [Insomnia ou outro aplicativo para testar a API](https://insomnia.rest/download)
+- [Swagger](https://swagger.io/)
+
 ## Instalação
 
 ```bash
