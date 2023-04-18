@@ -45,5 +45,8 @@ build/config\.gypi
 
 .npmrc
 pnpm-lock.yaml
-.env
+
 /dist
+/.env.production
+/.env.development
+/.env.local

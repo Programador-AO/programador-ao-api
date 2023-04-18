@@ -1,0 +1,4 @@
+/src/dist
+/src/.env.production
+/src/.env.development
+/src/.env.local
