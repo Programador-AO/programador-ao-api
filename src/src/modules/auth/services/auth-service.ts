@@ -1,24 +1,59 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../../users/services/user-service';
+import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
+
+import { UsuarioService } from '../../usuarios/services/usuario-service';
+import { UsuarioInterface } from '../../usuarios/interfaces/usuario-interface';
+import { LoginEmailPasswordResponseInterface } from '../interfaces/auth-interface';
+import { UsuarioRepository } from '../../../database/prisma/repositories/usuario-reposytory';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
+    private usuarioService: UsuarioService,
+    private usuarioRepository: UsuarioRepository,
     private jwtService: JwtService,
   ) {}
 
-  async signIn(username: string, pass: string): Promise<any> {
-    const user = await this.userService.findOne(username);
+  async loginEmailPassword(
+    email: string,
+    senha: string,
+  ): Promise<LoginEmailPasswordResponseInterface> {
+    if (!email) throw new BadRequestException('Email não informado');
+    if (!senha) throw new BadRequestException('Senha não informada');
 
-    // if (user?.password !== pass) {
-    //   throw new UnauthorizedException();
-    // }
+    const usuario = await this.usuarioRepository.getByEmail(email);
+    if (!usuario) throw new NotFoundException();
 
-    const payload = { userName: user.name, userId: user.id };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
+    const senhaValida = await bcrypt.compare(senha, usuario.senhaHash);
+    if (!senhaValida) {
+      throw new UnauthorizedException();
+    }
+
+    const payload = {
+      id: usuario.id,
+      nomeUsuario: usuario.nomeUsuario,
+      email: usuario.email,
+      telefone: usuario.email,
     };
+
+    return {
+      usuario: {
+        ...payload,
+        nomeCompleto: usuario.nomeCompleto,
+        avatar: usuario.avatar,
+      },
+      token: await this.jwtService.signAsync(payload),
+    };
+  }
+
+  async registerEmailSenha(data: UsuarioInterface): Promise<void> {
+    const senhaHash = await bcrypt.hash(data.senhaHash, 8);
+    await this.usuarioService.create({ ...data, senhaHash });
   }
 }

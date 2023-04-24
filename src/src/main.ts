@@ -2,12 +2,16 @@ import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { AppModule } from './app-module';
 import appConfig from './config/app.config';
-import { AppModule } from './modules/app-module';
+import { PrismaService } from './database/prisma/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const { port, appName, apiVersion } = appConfig();
+
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
 
   app.setGlobalPrefix(apiVersion);
   app.enableVersioning({

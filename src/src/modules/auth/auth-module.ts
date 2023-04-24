@@ -2,7 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import authConfig from '../../config/auth.config';
-import { UserModule } from '../users/user-module';
+import { UsuarioModule } from '../usuarios/usuario-module';
 import { AuthController } from './controllers/auth-controller';
 import { AuthGuard } from './guards/auth-guard';
 import { AuthService } from './services/auth-service';
@@ -25,7 +25,7 @@ export class AuthModule {
         },
       ],
       imports: [
-        UserModule,
+        UsuarioModule,
         JwtModule.register({
           global: true,
           secret: authConfig().jwtSecret,
