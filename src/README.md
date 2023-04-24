@@ -8,7 +8,6 @@ Repositório da [API](http://github.com/Programador-AO/programador-ao-api) da pl
 - [Prisma](https://www.prisma.io/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [MySQL](https://www.mysql.com/)
-- [Supertokens](https://supertokens.com/)
 - [Microserviços](https://microservices.io/)
 - [Insomnia ou outro aplicativo para testar a API](https://insomnia.rest/download)
 - [Swagger](https://swagger.io/)
@@ -23,51 +22,15 @@ cd programador-ao-api\src
 npm install
 ```
 
-### Instalação do Supertokens
-
-- Baixe o arquivo zip SuperTokens para o seu sistema operacional
+## Executando as migrations
 
 ```bash
-curl 'https://api.supertokens.com/0/user/app/download?pluginName=mysql&os=linux&core=4.6&api-version=0' --output supertokens.zip
-```
-
-Uma vez baixado, extraia o zip e você verá uma pasta chamada supertokens
-
-```bash
-cd supertokens
-sudo ./install
-```
-
-#### Conecte SuperTokens ao seu banco de dados
-
-- Você precisa adicionar ao arquivo config.yaml o seguinte:
-- O caminho do arquivo pode ser encontrado executando o comando "supertokens --help"
-- Remove o comentário (#) do mysql_connection_uri
-
-```bash
-mysql_connection_uri: mysql://username:pass@host/dbName
-```
-
-#### MySQL setup
-
-```bash
-CREATE DATABASE supertokens;
-```
-
-Você pode pular esta etapa se quiser que os SuperTokens gravem em seu próprio banco de dados. Nesse caso, você precisará fornecer o nome do seu banco de dados conforme mostrado na etapa abaixo.
-
-#### Iniciar SuperTokens
-
-```bash
-supertokens start
+npx prisma migrate dev
 ```
 
 ### Executando o projecto
 
 ```bash
-# local development
-npm run start:local
-
 # development
 npm run start
 
