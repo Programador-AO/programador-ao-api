@@ -50,3 +50,4 @@ pnpm-lock.yaml
 /.env.production
 /.env.development
 /.env.local
+/src/auth-supertokens

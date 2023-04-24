@@ -42,10 +42,19 @@ sudo ./install
 
 - Você precisa adicionar ao arquivo config.yaml o seguinte:
 - O caminho do arquivo pode ser encontrado executando o comando "supertokens --help"
+- Remove o comentário (#) do mysql_connection_uri
 
 ```bash
-mysql_connection_uri: "mysql://username:pass@host/dbName"
+mysql_connection_uri: mysql://username:pass@host/dbName
 ```
+
+#### MySQL setup
+
+```bash
+CREATE DATABASE supertokens;
+```
+
+Você pode pular esta etapa se quiser que os SuperTokens gravem em seu próprio banco de dados. Nesse caso, você precisará fornecer o nome do seu banco de dados conforme mostrado na etapa abaixo.
 
 #### Iniciar SuperTokens
 
