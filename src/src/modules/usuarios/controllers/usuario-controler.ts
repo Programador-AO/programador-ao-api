@@ -1,6 +1,7 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../../auth/guards/auth-guard';
 import { UsuarioService } from '../services/usuario-service';
+import { UsuarioRequest } from '../interfaces/usuario-interface';
 
 @Controller('usuarios')
 export class UsuarioController {
@@ -8,7 +9,7 @@ export class UsuarioController {
 
   @UseGuards(AuthGuard)
   @Get('perfil')
-  async getProfile(@Request() req) {
+  async getProfile(@Req() req: UsuarioRequest) {
     const { id } = req.usuario;
     const usuario = await this.usuarioService.getById(id);
 
@@ -16,8 +17,7 @@ export class UsuarioController {
   }
 
   @UseGuards(AuthGuard)
-  // @Get('')
-  async getAllUsuarios(@Request() req) {
+  async getAllUsuarios() {
     const usuarios = await this.usuarioService.getAll();
 
     return usuarios;

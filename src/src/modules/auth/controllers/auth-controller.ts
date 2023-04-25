@@ -1,7 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  HttpException,
+} from '@nestjs/common';
 import { Public } from '../guards/routes-visibility';
 import { AuthService } from '../services/auth-service';
-import { LoginEmailSenhaDto } from './dtos/login-email-senha-dto';
+import { LoginSenhaDto } from './dtos/login-senha-dto';
 import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
 
 @Controller('auth')
@@ -9,22 +16,22 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Public()
-  @Post('login')
+  @Post('logar')
   @HttpCode(HttpStatus.OK)
-  loginEmailSenha(@Body() input: LoginEmailSenhaDto) {
+  loginSenha(@Body() input: LoginSenhaDto) {
     try {
-      return this.authService.loginEmailPassword(input.email, input.senha);
+      return this.authService.loginSenha(input.login, input.senha);
     } catch (error) {
-      console.log(error);
+      throw new HttpException('Erro ao logar', HttpStatus.BAD_REQUEST);
     }
   }
 
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.OK)
-  registerEmailSenha(@Body() input: RegisterEmailSenhaDto) {
+  registerEmailTelefoneSenha(@Body() input: RegisterEmailSenhaDto) {
     try {
-      return this.authService.registerEmailSenha({
+      return this.authService.registerEmailTelefoneSenha({
         nomeCompleto: input.nome_completo,
         nomeUsuario: input.nome_usuario,
         email: input.email,
@@ -32,7 +39,7 @@ export class AuthController {
         senhaHash: input.senha,
       });
     } catch (error) {
-      console.log(error);
+      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
     }
   }
 }

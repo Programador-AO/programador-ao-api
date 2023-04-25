@@ -1,7 +1,4 @@
-// enum TipoUsuario {
-//   ADMIN = 'ADMIN',
-//   MEMBRO = 'MEMBRO',
-// }
+import { Request } from 'express';
 import { TipoUsuario } from '@prisma/client';
 
 export interface UsuarioInterface {
@@ -18,4 +15,8 @@ export interface UsuarioInterface {
   recuperarSenhaToken?: string;
   recuperarSenhaDataExpiracao?: string;
   activo?: boolean;
+}
+
+export interface UsuarioRequest extends Request {
+  usuario?: UsuarioInterface;
 }

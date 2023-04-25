@@ -25,7 +25,7 @@ npm install
 ## Executando as migrations
 
 ```bash
-npx prisma migrate dev
+npx run migration
 ```
 
 ### Executando o projecto
