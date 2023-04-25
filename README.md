@@ -29,6 +29,21 @@ cd programador-ao-api\src
 npm install
 ```
 
+### Configuração das variáveis de ambiente
+
+copia o arquivo `.env.example` e renomeia a copia para `.env` e preencha as variáveis `JWT_SECRET`, `JWT_EXPIRE` e `DATABASE_URL` e `PORT` caso não queira que execute na porta padrão `3000`
+
+```sh
+# Exemplo
+JWT_SECRET = 'alguma-coisa-qualquer'
+
+# Exemplo: 10h, 7d 
+JWT_EXPIRE = '30d'
+
+# DATABASE_URL = 'mysql://nome-usuario:@host:port/nome-base-de-dados'
+DATABASE_URL = 'mysql://root:@localhost:3306/programador_ao_db' 
+```
+
 ## Executando as migrations
 
 ```bash
@@ -71,7 +86,7 @@ npm run build
 
 ## Suporte
 
-Programador AO | API é um projeto de código aberto com a licença  MIT. Pode crescer graças aos membros e ao apoio dos incríveis contribuidores. Se você quiser se juntar a nós, [leia mais aqui](https://programador.ao/sobre-nos).
+Programador AO | API é um projeto de código aberto com a licença MIT. Pode crescer graças aos membros e ao apoio dos incríveis contribuidores. Se você quiser se juntar a nós, [leia mais aqui](https://programador.ao/sobre-nos).
 
 ## Contato
 
