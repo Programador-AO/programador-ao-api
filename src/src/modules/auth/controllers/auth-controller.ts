@@ -27,7 +27,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('register')
+  @Post('registrar')
   @HttpCode(HttpStatus.OK)
   registerEmailTelefoneSenha(@Body() input: RegisterEmailSenhaDto) {
     try {

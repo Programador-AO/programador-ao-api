@@ -84,6 +84,13 @@ npm run build
 
 ```
 
+## Endpoints
+
+- Documentação (Swagger): `POST:  host:port/`
+- Fazer login: `POST:  host:port/v1/auth/logar`
+- Fazer o cadastro: `POST:  host:port/v1/auth/registrar`
+- Buscar o perfil:  `GET:   host:port/v1/usuarios/perfil`
+
 ## Suporte
 
 Programador AO | API é um projeto de código aberto com a licença MIT. Pode crescer graças aos membros e ao apoio dos incríveis contribuidores. Se você quiser se juntar a nós, [leia mais aqui](https://programador.ao/sobre-nos).

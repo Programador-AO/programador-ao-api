@@ -30,11 +30,11 @@ copia o arquivo `.env.example` e renomeia a copia para `.env` e preencha as vari
 # Exemplo
 JWT_SECRET = 'alguma-coisa-qualquer'
 
-# Exemplo: 10h, 7d 
+# Exemplo: 10h, 7d
 JWT_EXPIRE = '30d'
 
 # DATABASE_URL = 'mysql://nome-usuario:@host:port/nome-base-de-dados'
-DATABASE_URL = 'mysql://root:@localhost:3306/programador_ao_db' 
+DATABASE_URL = 'mysql://root:@localhost:3306/programador_ao_db'
 ```
 
 ## Executando as migrations
@@ -74,8 +74,14 @@ npm run test:cov
 ```bash
 # build (pasta: dist)
 npm run build
-
 ```
+
+## Endpoints
+
+- Documentação (Swagger): `POST:  host:port/`
+- Fazer login: `POST:  host:port/v1/auth/logar`
+- Fazer o cadastro: `POST:  host:port/v1/auth/registrar`
+- Buscar o perfil: `GET:   host:port/v1/usuarios/perfil`
 
 ## Suporte
 
