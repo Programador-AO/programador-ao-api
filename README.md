@@ -1,12 +1,13 @@
 # Programador AO | API
 
+Repositório da [API](http://github.com/Programador-AO/programador-ao-api) da plataforma Programador AO, construído pela comunidade
+
 ## [Tecnologias](/docs/tecnologias.md)
 
 - [NestJS](https://www.fastify.io/) | Framework
 - [Prisma](https://www.prisma.io/) | Modelagem da base de dados
 - [TypeScript](https://www.typescriptlang.org/) | Linguagem de Programação
 - [MySQL](https://www.mysql.com/) | Gerenciador de base de dados
-- [Supertokens](https://supertokens.com/) | Autenticação de Usuário
 - [Microserviços](https://microservices.io/) | Padrão de desenvolvimento
 - [Insomnia ou outro aplicativo para testar a API](https://insomnia.rest/download) | Testes da API
 - [Swagger](https://swagger.io/) | Documentação da API
@@ -28,42 +29,15 @@ cd programador-ao-api\src
 npm install
 ```
 
-### Instalação do Supertokens
-
-- Baixe o arquivo zip SuperTokens para o seu sistema operacional
+## Executando as migrations
 
 ```bash
-curl 'https://api.supertokens.com/0/user/app/download?pluginName=mysql&os=linux&core=4.6&api-version=0' --output supertokens.zip
-```
-
-Uma vez baixado, extraia o zip e você verá uma pasta chamada supertokens
-
-```bash
-cd supertokens
-sudo ./install
-```
-
-#### Conecte SuperTokens ao seu banco de dados
-
-- Você precisa adicionar ao arquivo config.yaml o seguinte:
-- O caminho do arquivo pode ser encontrado executando o comando "supertokens --help"
-
-```bash
-mysql_connection_uri: "mysql://username:pass@host/dbName"
-```
-
-#### Iniciar SuperTokens
-
-```bash
-supertokens start
+npx run migration
 ```
 
 ### Executando o projecto
 
 ```bash
-# local development
-npm run start:local
-
 # development
 npm run start
 
@@ -97,7 +71,7 @@ npm run build
 
 ## Suporte
 
-Programador AO | API é um projeto de código aberto licenciado pelo MIT. Pode crescer graças aos patrocinadores e ao apoio dos incríveis patrocinadores. Se você quiser se juntar a eles, [leia mais aqui](https://programador.ao/sobre-nos).
+Programador AO | API é um projeto de código aberto com a licença  MIT. Pode crescer graças aos membros e ao apoio dos incríveis contribuidores. Se você quiser se juntar a nós, [leia mais aqui](https://programador.ao/sobre-nos).
 
 ## Contato
 

@@ -64,7 +64,7 @@ npm run build
 
 ## Suporte
 
-Programador AO | API é um projeto de código aberto licenciado pelo MIT. Pode crescer graças aos patrocinadores e ao apoio dos incríveis patrocinadores. Se você quiser se juntar a eles, [leia mais aqui](https://programador.ao/sobre-nos).
+Programador AO | API é um projeto de código aberto com a licença MIT. Pode crescer graças aos membros e ao apoio dos incríveis contribuidores. Se você quiser se juntar a nós, [leia mais aqui](https://programador.ao/sobre-nos).
 
 ## Contato
 
