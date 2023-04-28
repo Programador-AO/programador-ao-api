@@ -1,7 +1,7 @@
-import { Module, Global } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
-import { UsuarioRepository } from './prisma/repositories/usuario-reposytory';
 import { SessionRepository } from './prisma/repositories/session-repository';
+import { UsuarioRepository } from './prisma/repositories/usuario-repository';
 
 @Global()
 @Module({
