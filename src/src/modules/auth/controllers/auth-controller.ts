@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   HttpException,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
 import { LoginSenhaService } from '../services/login-senha-service';
 import { AlterarSenhaService } from '../services/alterar-senha-service';
 import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha-service';
+import { RequestCustom } from '../../usuarios/interfaces/usuario-interface';
 
 @Controller('auth')
 export class AuthController {
@@ -58,12 +60,12 @@ export class AuthController {
   @Post('alterar-senha')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  alterarSenha(@Body() input: AlterarSenhaDto) {
+  alterarSenha(@Req() req: RequestCustom, @Body() input: AlterarSenhaDto) {
+    const { id } = req.usuario;
+    const { senha_antiga, senha_nova } = input;
+
     try {
-      return this.alterarSenhaService.execute(
-        input.senha_antiga,
-        input.senha_nova,
-      );
+      return this.alterarSenhaService.execute(id, senha_antiga, senha_nova);
     } catch (error) {
       throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
     }

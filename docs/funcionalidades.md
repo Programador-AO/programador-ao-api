@@ -9,7 +9,9 @@
 	- [x] Login com senha
 	- [] Login com Google
 	- [] Login com Github
-	- [] Alterar Senha
+	- Alteração de Senha
+		- [x] Alterar senha
+		- [] Actualizar token\sessão para invalidar o token antigo
 	- [] Alterar Email
 	- [] Verificação de email
 	- [] Verificar Telefone
@@ -17,6 +19,7 @@
 		- [] Terminar sessão
 		- [] Listar sessões por usuario
 		- [] Anular Sessão
+		- [] Actualizar token\sessão para invalidar o token antigo
 	- [] Apagar Conta
 	- [] Actualizar dados conta
 	- [] Detalhes da conta 

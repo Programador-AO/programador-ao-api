@@ -17,6 +17,6 @@ export interface UsuarioInterface {
   activo?: boolean;
 }
 
-export interface UsuarioRequest extends Request {
+export interface RequestCustom extends Request {
   usuario?: UsuarioInterface;
 }

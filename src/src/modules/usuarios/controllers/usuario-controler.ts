@@ -1,7 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../../auth/guards/auth-guard';
 import { UsuarioService } from '../services/usuario-service';
-import { UsuarioRequest } from '../interfaces/usuario-interface';
+import { RequestCustom } from '../interfaces/usuario-interface';
 
 @Controller('usuarios')
 export class UsuarioController {
@@ -9,7 +9,7 @@ export class UsuarioController {
 
   @UseGuards(AuthGuard)
   @Get('perfil')
-  async getProfile(@Req() req: UsuarioRequest) {
+  async getProfile(@Req() req: RequestCustom) {
     const { id } = req.usuario;
     const usuario = await this.usuarioService.getById(id);
 

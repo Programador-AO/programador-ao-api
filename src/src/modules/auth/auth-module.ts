@@ -5,7 +5,9 @@ import authConfig from '../../config/auth.config';
 import { UsuarioModule } from '../usuarios/usuario-module';
 import { AuthController } from './controllers/auth-controller';
 import { AuthGuard } from './guards/auth-guard';
-import { AuthService } from './services/auth-service';
+import { LoginSenhaService } from './services/login-senha-service';
+import { RegistrarEmailTelefoneSenhaService } from './services/registrar-email-telefone-senha-service';
+import { AlterarSenhaService } from './services/alterar-senha-service';
 
 @Module({
   providers: [],
@@ -18,7 +20,9 @@ export class AuthModule {
     return {
       module: AuthModule,
       providers: [
-        AuthService,
+        LoginSenhaService,
+        RegistrarEmailTelefoneSenhaService,
+        AlterarSenhaService,
         {
           provide: APP_GUARD,
           useClass: AuthGuard,
@@ -32,7 +36,11 @@ export class AuthModule {
           signOptions: { expiresIn: authConfig().jwtExpire },
         }),
       ],
-      exports: [AuthService],
+      // exports: [
+      //   LoginSenhaService,
+      //   RegistrarEmailTelefoneSenhaService,
+      //   AlterarSenhaService,
+      // ],
       controllers: [AuthController],
     };
   }

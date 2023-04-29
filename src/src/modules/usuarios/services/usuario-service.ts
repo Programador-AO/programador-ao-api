@@ -34,8 +34,33 @@ export class UsuarioService {
     if (!result) throw new Error('Erro ao cadastrar usuário');
   }
 
-  async update(id: string, data: UsuarioInterface): Promise<UsuarioInterface> {
-    throw new Error('Method not implemented.');
+  async update(id: string, data: UsuarioInterface): Promise<void> {
+    const { nomeCompleto, nomeUsuario, email, telefone, senhaHash, avatar } =
+      data;
+
+    if (!nomeCompleto) throw new Error('Nome completo é obrigatário');
+
+    const telefoneExiste = await this.getByTelefone(telefone);
+    if (telefoneExiste) throw new Error('Telefone já cadastrado');
+
+    const emailExiste = await this.getByEmail(email);
+    if (emailExiste) throw new Error('Email já cadastrado');
+
+    const nomeUsuarioExiste = await this.getByNomeUsuario(nomeUsuario);
+    if (nomeUsuarioExiste) throw new Error('Nome de usuário já cadastrado');
+
+    // const result = await this.usuarioRepository.update({
+    //   ...data,
+    //   nomeCompleto,
+    //   nomeUsuario,
+    //   email,
+    //   telefone,
+    //   senhaHash,
+    //   avatar,
+    // });
+
+    // if (!result) throw new Error('Erro ao cadastrar usuário');
+    // throw new Error('Method not implemented.');
   }
 
   async delete(id: string): Promise<UsuarioInterface> {

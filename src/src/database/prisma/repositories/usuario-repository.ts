@@ -20,6 +20,13 @@ export class UsuarioRepository {
     });
   }
 
+  async updateSenha(id: string, senhaHash: string): Promise<Usuario> {
+    return this.prisma.usuario.update({
+      data: { senhaHash },
+      where: { id },
+    });
+  }
+
   async delete(id: string): Promise<Usuario> {
     return this.prisma.usuario.delete({
       where: { id },
