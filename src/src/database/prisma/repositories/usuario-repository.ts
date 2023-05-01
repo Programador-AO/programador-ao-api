@@ -27,6 +27,13 @@ export class UsuarioRepository {
     });
   }
 
+  async setTokenVerificacaoEmail(id: string, token: string): Promise<Usuario> {
+    return this.prisma.usuario.update({
+      data: { tokenVerificacaoEmail: token },
+      where: { id },
+    });
+  }
+
   async verificarEmail(id: string): Promise<Usuario> {
     return this.prisma.usuario.update({
       data: { emailVerificado: true },

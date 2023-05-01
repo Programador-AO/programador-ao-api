@@ -7,6 +7,7 @@ import { UsuarioRepository } from '../../../database/prisma/repositories/usuario
 
 import { useTransport } from '../../../config/mailer';
 import appConfig from '../../../config/app.config';
+import authConfig from '../../../config/auth.config';
 
 @Injectable()
 export class VerificacaoEmailService {
@@ -27,7 +28,7 @@ export class VerificacaoEmailService {
     if (!emailSuporte)
       throw new BadRequestException('Email de suporte não configurado');
 
-    const payload = { id: usuario.id };
+    const payload = { id: usuario.id, email: usuario.email };
     const configToken = { expiresIn: '1800s' };
     const token = await this.jwtService.signAsync(payload, configToken);
     const url = `${websiteDomain}/autenticacao/verificar-email?token=${token}`;
@@ -44,22 +45,40 @@ export class VerificacaoEmailService {
       },
     };
 
+    const response = await this.usuarioRepository.setTokenVerificacaoEmail(
+      usuario.id,
+      token,
+    );
+
+    if (!response)
+      throw new BadRequestException('Erro ao salvar token de verificação');
+
     const result = await mailer.sendMail(sendMailConfig);
 
     if (!result)
       throw new BadRequestException('Erro ao enviar e-mail de verificação');
   }
 
-  async verificar(email: string): Promise<void> {
-    if (isEmpty(email))
-      throw new BadRequestException('email: Campo obrigatório.');
+  async verificar(id: string, token: string) {
+    if (isEmpty(token))
+      throw new BadRequestException('token: Campo obrigatário.');
 
-    const usuario = await this.usuarioRepository.getByEmail(email);
-    if (usuario?.emailVerificado) {
+    const usuario = await this.usuarioRepository.getById(id);
+    if (usuario?.tokenVerificacaoEmail !== token)
+      throw new BadRequestException('Token inválido');
+
+    const payload = await this.jwtService.verifyAsync(token, {
+      secret: authConfig().jwtSecret,
+    });
+
+    if (payload.id !== usuario?.id)
+      throw new BadRequestException('Token inválido');
+
+    if (payload.email !== usuario?.email)
+      throw new BadRequestException('Token inválido');
+
+    if (usuario?.emailVerificado)
       throw new BadRequestException('Email já verificado');
-    }
-
-    // Implementar regras para validar email
 
     await this.usuarioRepository.verificarEmail(usuario?.id ?? '');
   }
