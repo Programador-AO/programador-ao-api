@@ -7,26 +7,38 @@ export class UsuarioService {
   constructor(private usuarioRepository: UsuarioRepository) {}
 
   async create(data: UsuarioInterface) {
-    // const { nomeCompleto, nomeUsuario, email, telefone, senhaHash, avatar } =
-    //   data;
-    // if (!nomeCompleto) throw new Error('Nome completo é obrigatário');
-    // const telefoneExiste = await this.getByTelefone(telefone);
-    // if (telefoneExiste) throw new Error('Telefone já cadastrado');
-    // const emailExiste = await this.getByEmail(email);
-    // if (emailExiste) throw new Error('Email já cadastrado');
-    // const nomeUsuarioExiste = await this.getByNomeUsuario(nomeUsuario);
-    // if (nomeUsuarioExiste) throw new Error('Nome de usuário já cadastrado');
-    // const usuario = await this.usuarioRepository.create({
-    //   ...data,
-    //   nomeCompleto,
-    //   nomeUsuario,
-    //   email,
-    //   telefone,
-    //   senhaHash,
-    //   avatar,
-    // });
-    // if (!usuario) throw new Error('Erro ao cadastrar usuário');
-    // return { usuario };
+    const {
+      nomeCompleto,
+      nomeUsuario,
+      email,
+      telefone,
+      senhaHash = '',
+      avatar,
+    } = data;
+
+    if (!nomeCompleto) throw new Error('Nome completo é obrigatário');
+
+    const telefoneExiste = await this.getByTelefone(telefone);
+    if (telefoneExiste) throw new Error('Telefone já cadastrado');
+
+    const emailExiste = await this.getByEmail(email);
+    if (emailExiste) throw new Error('Email já cadastrado');
+
+    const nomeUsuarioExiste = await this.getByNomeUsuario(nomeUsuario);
+    if (nomeUsuarioExiste) throw new Error('Nome de usuário já cadastrado');
+
+    const usuario = await this.usuarioRepository.create({
+      ...data,
+      nomeCompleto,
+      nomeUsuario,
+      email,
+      telefone,
+      senhaHash,
+      avatar,
+    });
+
+    if (!usuario) throw new Error('Erro ao cadastrar usuário');
+    return { usuario };
   }
 
   async update(id: string, data: UsuarioInterface) {

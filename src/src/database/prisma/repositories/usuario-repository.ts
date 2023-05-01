@@ -27,6 +27,13 @@ export class UsuarioRepository {
     });
   }
 
+  async verificarEmail(id: string): Promise<Usuario> {
+    return this.prisma.usuario.update({
+      data: { emailVerificado: true },
+      where: { id },
+    });
+  }
+
   async delete(id: string): Promise<Usuario> {
     return this.prisma.usuario.delete({
       where: { id },

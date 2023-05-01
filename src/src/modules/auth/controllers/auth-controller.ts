@@ -18,12 +18,12 @@ import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
 
 import { LoginSenhaService } from '../services/login-senha-service';
 import { AlterarSenhaService } from '../services/alterar-senha-service';
+import { VerificacaoEmailService } from '../services/verificacao-email-service';
 import { AlterarDadosAutenticacaoService } from '../services/alterar-dados-autenticacao-service';
 import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha-service';
 
 import { RequestCustom } from '../../../helpers/request-custom';
 import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
-import { toCamelCase } from '../../../helpers/convert-property-case';
 
 @Controller('auth')
 export class AuthController {
@@ -32,6 +32,7 @@ export class AuthController {
     private registrarEmailTelefoneSenhaService: RegistrarEmailTelefoneSenhaService,
     private alterarSenhaService: AlterarSenhaService,
     private alterarDadosAutenticacaoService: AlterarDadosAutenticacaoService,
+    private verificacaoEmailService: VerificacaoEmailService,
   ) {}
 
   @Public()
@@ -88,6 +89,40 @@ export class AuthController {
   ) {
     try {
       const id = req.usuario?.id ?? '';
+      return this.alterarDadosAutenticacaoService.execute(id, {
+        nomeCompleto: input.nome_completo,
+        nomeUsuario: input.nome_usuario,
+        email: input.email,
+        telefone: input.telefone,
+      });
+    } catch (error) {
+      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('solicitar-verificacao-email')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async solicitacaoVerificacaoEmail(@Req() req: RequestCustom) {
+    try {
+      await this.verificacaoEmailService.solicitar(req.usuario?.id ?? '');
+
+      return { message: 'Email enviado com sucesso!' };
+    } catch (error) {
+      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('verificar-email')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  verificacaoEmail(
+    @Req() req: RequestCustom,
+    @Body() input: AlterarDadosAutenticacaoDto,
+  ) {
+    try {
+      const id = req.usuario?.id ?? '';
+
       return this.alterarDadosAutenticacaoService.execute(id, {
         nomeCompleto: input.nome_completo,
         nomeUsuario: input.nome_usuario,

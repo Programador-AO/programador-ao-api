@@ -28,6 +28,7 @@ model Usuario {
   tipo                        TipoUsuario @default(MEMBRO)
   recuperarSenhaToken         String?     @default("null") @map("recuperar_senha_token")
   recuperarSenhaDataExpiracao String?     @default("null") @map("recuperar_senha_data_expiracao")
+  tokenVerificacaoEmail       String?     @default("null") @map("token_verificacao_email")
   activo                      Boolean     @default(true)
   createdAt                   DateTime    @default(now()) @map("created_at")
   updatedAt                   DateTime    @default(now()) @map("updated_at")

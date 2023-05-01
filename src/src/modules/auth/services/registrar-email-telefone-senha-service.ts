@@ -18,12 +18,10 @@ export class RegistrarEmailTelefoneSenhaService {
     private jwtService: JwtService,
   ) {}
 
-  async execute(data: UsuarioInterface): Promise<void> {
+  async execute(data: UsuarioInterface) {
     await this.validarRegistro(data);
-
-    const senhaHash = data.senhaHash && (await bcrypt.hash(data.senhaHash, 8));
-
-    await this.usuarioService.create({ ...data, senhaHash });
+    const senhaHash = await bcrypt.hash(data.senhaHash ?? '', 8);
+    await this.usuarioRepository.create({ ...data, senhaHash });
   }
 
   private async validarRegistro(data: UsuarioInterface) {
@@ -66,6 +64,7 @@ export class RegistrarEmailTelefoneSenhaService {
     const usuarioNomeExiste = await this.usuarioRepository.getByNomeUsuario(
       nomeUsuario,
     );
+
     if (usuarioNomeExiste)
       throw new BadRequestException('Nome de usuário já cadastrado');
 

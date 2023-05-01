@@ -12,7 +12,6 @@
 	- Alteração de Senha
 		- [x] Alterar senha
 		- [] Actualizar token\sessão para invalidar o token antigo
-	- [] Alterar Email
 	- [] Verificação de email
 	- [] Verificar Telefone
 	- [] Sessões
@@ -21,7 +20,7 @@
 		- [] Anular Sessão
 		- [] Actualizar token\sessão para invalidar o token antigo
 	- [] Apagar Conta
-	- [] Actualizar dados conta
+	- [x] Actualizar dados conta
 	- [] Detalhes da conta 
 		- Id do Usuario
 		- nome
