@@ -1,39 +1,28 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { isEmail, isEmpty } from 'class-validator';
 
 import { SessionRepository } from '../../../database/prisma/repositories/session-repository';
 import { UsuarioRepository } from '../../../database/prisma/repositories/usuario-repository';
 import { isValidNomeUsuario } from '../../../helpers/regex';
 import { UsuarioInterface } from '../../usuarios/interfaces/usuario-interface';
-import { UsuarioService } from '../../usuarios/services/usuario-service';
 
 @Injectable()
-export class RegistrarEmailTelefoneSenhaService {
+export class AlterarDadosAutenticacaoService {
   constructor(
-    private usuarioService: UsuarioService,
     private usuarioRepository: UsuarioRepository,
     private sessionRepository: SessionRepository,
-    private jwtService: JwtService,
   ) {}
 
-  async execute(data: UsuarioInterface): Promise<void> {
-    await this.validarRegistro(data);
+  async execute(id: string, data: UsuarioInterface) {
+    const dadosValidos = await this.validarRegistro(id, data);
 
-    const senhaHash = data.senhaHash && (await bcrypt.hash(data.senhaHash, 8));
-
-    await this.usuarioService.create({ ...data, senhaHash });
+    await this.usuarioRepository.update(id, {
+      ...dadosValidos,
+    });
   }
 
-  private async validarRegistro(data: UsuarioInterface) {
-    const {
-      nomeCompleto,
-      nomeUsuario,
-      email,
-      telefone,
-      senhaHash: Senha,
-    } = data;
+  private async validarRegistro(id: string, data: UsuarioInterface) {
+    const { nomeCompleto, nomeUsuario, email, telefone } = data;
 
     if (isEmpty(nomeCompleto))
       throw new BadRequestException('nome_completo: Campo obrigatório');
@@ -49,26 +38,48 @@ export class RegistrarEmailTelefoneSenhaService {
 
     if (!isEmail(email)) throw new BadRequestException('Email inválido');
 
-    if (isEmpty(Senha))
-      throw new BadRequestException('senha: Campo obrigatório');
-
     if (!isValidNomeUsuario(nomeUsuario))
       throw new BadRequestException(
         'Nome de usuário inválido. (aceita apenas letras[a-z, A-Z], números[0-9], sublinhados (_) e traços (-))',
       );
 
     const emailExiste = await this.usuarioRepository.getByEmail(email);
-    if (emailExiste) throw new BadRequestException('Email já cadastrado');
+    if (emailExiste && emailExiste.id !== id)
+      throw new BadRequestException('Email já cadastrado');
 
     const telefoneExiste = await this.usuarioRepository.getByTelefone(telefone);
-    if (telefoneExiste) throw new BadRequestException('Telefone já cadastrado');
+    if (telefoneExiste && telefoneExiste.id !== id)
+      throw new BadRequestException('Telefone já cadastrado');
 
     const usuarioNomeExiste = await this.usuarioRepository.getByNomeUsuario(
       nomeUsuario,
     );
-    if (usuarioNomeExiste)
+    if (usuarioNomeExiste && usuarioNomeExiste.id !== id)
       throw new BadRequestException('Nome de usuário já cadastrado');
 
+    const usuario = await this.usuarioRepository.getById(id ?? '');
+
+    if (usuario?.email !== email) {
+      await this.removerSessao(id ?? '');
+      data.emailVerificado = false;
+    }
+
+    if (usuario?.telefone !== telefone) {
+      await this.removerSessao(id ?? '');
+      data.telefoneVerificado = false;
+    }
+
+    if (usuario?.nomeUsuario !== nomeUsuario) {
+      await this.removerSessao(id ?? '');
+    }
+
     return data;
+  }
+
+  private async removerSessao(usuarioId: string) {
+    const session = await this.sessionRepository.getByUsuarioId(usuarioId);
+    if (session) {
+      await this.sessionRepository.delete(session.id);
+    }
   }
 }

@@ -18,8 +18,12 @@ import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
 
 import { LoginSenhaService } from '../services/login-senha-service';
 import { AlterarSenhaService } from '../services/alterar-senha-service';
+import { AlterarDadosAutenticacaoService } from '../services/alterar-dados-autenticacao-service';
 import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha-service';
-import { RequestCustom } from '../../usuarios/interfaces/usuario-interface';
+
+import { RequestCustom } from '../../../helpers/request-custom';
+import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
+import { toCamelCase } from '../../../helpers/convert-property-case';
 
 @Controller('auth')
 export class AuthController {
@@ -27,6 +31,7 @@ export class AuthController {
     private loginSenhaService: LoginSenhaService,
     private registrarEmailTelefoneSenhaService: RegistrarEmailTelefoneSenhaService,
     private alterarSenhaService: AlterarSenhaService,
+    private alterarDadosAutenticacaoService: AlterarDadosAutenticacaoService,
   ) {}
 
   @Public()
@@ -61,11 +66,34 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   alterarSenha(@Req() req: RequestCustom, @Body() input: AlterarSenhaDto) {
-    const { id } = req.usuario;
-    const { senha_antiga, senha_nova } = input;
+    const {
+      id = '',
+      senha_antiga,
+      senha_nova,
+    } = { id: req.usuario?.id, ...input };
 
     try {
       return this.alterarSenhaService.execute(id, senha_antiga, senha_nova);
+    } catch (error) {
+      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('alterar-dados')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  alterarDados(
+    @Req() req: RequestCustom,
+    @Body() input: AlterarDadosAutenticacaoDto,
+  ) {
+    try {
+      const id = req.usuario?.id ?? '';
+      return this.alterarDadosAutenticacaoService.execute(id, {
+        nomeCompleto: input.nome_completo,
+        nomeUsuario: input.nome_usuario,
+        email: input.email,
+        telefone: input.telefone,
+      });
     } catch (error) {
       throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
     }

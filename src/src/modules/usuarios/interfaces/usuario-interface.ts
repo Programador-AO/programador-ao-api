@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { TipoUsuario } from '@prisma/client';
 
 export interface UsuarioInterface {
@@ -15,8 +14,4 @@ export interface UsuarioInterface {
   recuperarSenhaToken?: string;
   recuperarSenhaDataExpiracao?: string;
   activo?: boolean;
-}
-
-export interface RequestCustom extends Request {
-  usuario?: UsuarioInterface;
 }

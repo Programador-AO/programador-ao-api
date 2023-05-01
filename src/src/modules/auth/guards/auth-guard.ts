@@ -10,6 +10,7 @@ import { Request } from 'express';
 
 import authConfig from '../../../config/auth.config';
 import { IS_PUBLIC_KEY } from './routes-visibility';
+import { UsuarioInterface } from '../../usuarios/interfaces/usuario-interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -33,9 +34,12 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: authConfig().jwtSecret,
-      });
+      const payload: UsuarioInterface = await this.jwtService.verifyAsync(
+        token,
+        {
+          secret: authConfig().jwtSecret,
+        },
+      );
 
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers

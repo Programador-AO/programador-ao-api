@@ -12,10 +12,20 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@config/*": ["./src/config/*"],
+      "@database/*": ["./src/database/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@tests/*": ["tests/*"]
+    }
   }
 }

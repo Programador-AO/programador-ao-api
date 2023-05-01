@@ -1,7 +1,9 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+
 import { AuthGuard } from '../../auth/guards/auth-guard';
 import { UsuarioService } from '../services/usuario-service';
-import { RequestCustom } from '../interfaces/usuario-interface';
+import { RequestCustom } from '../../../helpers/request-custom';
+import { ControllerUsuarioMapper } from '../../../database/prisma/mappers/controller-usuario-mapper';
 
 @Controller('usuarios')
 export class UsuarioController {
@@ -10,16 +12,19 @@ export class UsuarioController {
   @UseGuards(AuthGuard)
   @Get('perfil')
   async getProfile(@Req() req: RequestCustom) {
-    const { id } = req.usuario;
-    const usuario = await this.usuarioService.getById(id);
+    const id = req.usuario?.id ?? '';
+    const { usuario } = await this.usuarioService.getById(id);
 
-    return usuario;
+    return ControllerUsuarioMapper.toController(usuario);
   }
 
   @UseGuards(AuthGuard)
+  @Get('/')
   async getAllUsuarios() {
-    const usuarios = await this.usuarioService.getAll();
+    const { usuarios } = await this.usuarioService.getAll();
 
-    return usuarios;
+    return usuarios.map((usuario) =>
+      ControllerUsuarioMapper.toController({ ...usuario }),
+    );
   }
 }

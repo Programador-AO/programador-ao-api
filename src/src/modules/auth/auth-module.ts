@@ -8,6 +8,7 @@ import { AuthGuard } from './guards/auth-guard';
 import { LoginSenhaService } from './services/login-senha-service';
 import { RegistrarEmailTelefoneSenhaService } from './services/registrar-email-telefone-senha-service';
 import { AlterarSenhaService } from './services/alterar-senha-service';
+import { AlterarDadosAutenticacaoService } from './services/alterar-dados-autenticacao-service';
 
 @Module({
   providers: [],
@@ -23,6 +24,7 @@ export class AuthModule {
         LoginSenhaService,
         RegistrarEmailTelefoneSenhaService,
         AlterarSenhaService,
+        AlterarDadosAutenticacaoService,
         {
           provide: APP_GUARD,
           useClass: AuthGuard,

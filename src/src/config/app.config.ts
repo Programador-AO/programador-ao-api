@@ -3,10 +3,10 @@ export default () => {
     process.env;
 
   return {
-    port: parseInt(PORT, 10) || 3000,
-    appName: APP_NAME,
-    apiDomain: API_DOMAIN,
-    apiVersion: API_VERSION,
-    websiteDomain: WEBSITE_DOMAIN,
+    port: parseInt(PORT ?? '3000', 10),
+    appName: APP_NAME ?? '',
+    apiDomain: API_DOMAIN ?? '',
+    apiVersion: API_VERSION ?? '',
+    websiteDomain: WEBSITE_DOMAIN ?? '',
   };
 };
