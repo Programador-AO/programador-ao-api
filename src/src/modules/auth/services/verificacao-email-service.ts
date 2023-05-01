@@ -80,6 +80,18 @@ export class VerificacaoEmailService {
     if (usuario?.emailVerificado)
       throw new BadRequestException('Email já verificado');
 
-    await this.usuarioRepository.verificarEmail(usuario?.id ?? '');
+    const responseToken = await this.usuarioRepository.setTokenVerificacaoEmail(
+      usuario.id,
+      null,
+    );
+
+    if (!responseToken)
+      throw new BadRequestException('Erro ao salvar token de verificação');
+
+    const response = await this.usuarioRepository.verificarEmail(
+      usuario?.id ?? '',
+    );
+
+    if (!response) throw new BadRequestException('Erro ao verificar e-mail');
   }
 }
