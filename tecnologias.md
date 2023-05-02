@@ -6,7 +6,6 @@
 - [Prisma](https://www.prisma.io/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [MySQL](https://www.mysql.com/)
-- [Supertokens](https://supertokens.com/)
 - [Microserviços](https://microservices.io/)
 - [Insomnia ou outro aplicativo para testar a API](https://insomnia.rest/download)
 - [Swagger](https://swagger.io/)
@@ -26,10 +25,6 @@ TypeScript é uma linguagem de programação de código aberto desenvolvida pela
 ### MySQL
 
 O MySQL é um sistema de gerenciamento de banco de dados, que utiliza a linguagem SQL como interface. É atualmente um dos sistemas de gerenciamento de bancos de dados mais populares da Oracle Corporation, com mais de 10 milhões de instalações pelo mundo.
-
-### Supertokens
-
-Autenticação de usuário de código aberto ·
 
 ### Microserviços
 
