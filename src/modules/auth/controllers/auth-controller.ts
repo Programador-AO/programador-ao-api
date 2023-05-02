@@ -14,7 +14,9 @@ import { AuthGuard } from '../../auth/guards/auth-guard';
 
 import { LoginSenhaDto } from './dtos/login-senha-dto';
 import { AlterarSenhaDto } from './dtos/alterar-senha-dto';
+import { VerificarEmailDto } from './dtos/verificar-email-dto';
 import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
+import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
 
 import { LoginSenhaService } from '../services/login-senha-service';
 import { AlterarSenhaService } from '../services/alterar-senha-service';
@@ -23,7 +25,6 @@ import { AlterarDadosAutenticacaoService } from '../services/alterar-dados-auten
 import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha-service';
 
 import { RequestCustom } from '../../../helpers/request-custom';
-import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -49,15 +50,17 @@ export class AuthController {
   @Public()
   @Post('registrar')
   @HttpCode(HttpStatus.OK)
-  registerEmailTelefoneSenha(@Body() input: RegisterEmailSenhaDto) {
+  async registerEmailTelefoneSenha(@Body() input: RegisterEmailSenhaDto) {
     try {
-      return this.registrarEmailTelefoneSenhaService.execute({
+      await this.registrarEmailTelefoneSenhaService.execute({
         nomeCompleto: input.nome_completo,
         nomeUsuario: input.nome_usuario,
         email: input.email,
         telefone: input.telefone,
         senhaHash: input.senha,
       });
+
+      return { message: 'Registrado com sucesso!' };
     } catch (error) {
       throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
     }
@@ -66,7 +69,10 @@ export class AuthController {
   @Post('alterar-senha')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  alterarSenha(@Req() req: RequestCustom, @Body() input: AlterarSenhaDto) {
+  async alterarSenha(
+    @Req() req: RequestCustom,
+    @Body() input: AlterarSenhaDto,
+  ) {
     const {
       id = '',
       senha_antiga,
@@ -74,29 +80,33 @@ export class AuthController {
     } = { id: req.usuario?.id, ...input };
 
     try {
-      return this.alterarSenhaService.execute(id, senha_antiga, senha_nova);
+      await this.alterarSenhaService.execute(id, senha_antiga, senha_nova);
+
+      return { message: 'Senha alterada com sucesso!' };
     } catch (error) {
-      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Erro ao alterar senha', HttpStatus.BAD_REQUEST);
     }
   }
 
   @Post('alterar-dados')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  alterarDados(
+  async alterarDados(
     @Req() req: RequestCustom,
     @Body() input: AlterarDadosAutenticacaoDto,
   ) {
     try {
       const id = req.usuario?.id ?? '';
-      return this.alterarDadosAutenticacaoService.execute(id, {
+      await this.alterarDadosAutenticacaoService.execute(id, {
         nomeCompleto: input.nome_completo,
         nomeUsuario: input.nome_usuario,
         email: input.email,
         telefone: input.telefone,
       });
+
+      return { message: 'Dados alterados com sucesso!' };
     } catch (error) {
-      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Erro ao alterar dados', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -109,28 +119,29 @@ export class AuthController {
 
       return { message: 'Email enviado com sucesso!' };
     } catch (error) {
-      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Erro ao solicitar verificação de email',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   @Post('verificar-email')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
-  verificacaoEmail(
+  @Public()
+  async verificacaoEmail(
     @Req() req: RequestCustom,
-    @Body() input: AlterarDadosAutenticacaoDto,
+    @Body() input: VerificarEmailDto,
   ) {
     try {
-      const id = req.usuario?.id ?? '';
+      await this.verificacaoEmailService.verificar(input.token);
 
-      return this.alterarDadosAutenticacaoService.execute(id, {
-        nomeCompleto: input.nome_completo,
-        nomeUsuario: input.nome_usuario,
-        email: input.email,
-        telefone: input.telefone,
-      });
+      return { message: 'Email verificado com sucesso!' };
     } catch (error) {
-      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Erro ao verificar email',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

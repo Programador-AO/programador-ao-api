@@ -2,22 +2,15 @@
 
 Repositório da [API](http://github.com/Programador-AO/programador-ao-api) da plataforma Programador AO, construído pela comunidade
 
-## [Tecnologias](/docs/tecnologias.md)
+## Tecnologias
 
-- [NestJS](https://www.fastify.io/) | Framework
-- [Prisma](https://www.prisma.io/) | Modelagem da base de dados
-- [TypeScript](https://www.typescriptlang.org/) | Linguagem de Programação
-- [MySQL](https://www.mysql.com/) | Gerenciador de base de dados
-- [Microserviços](https://microservices.io/) | Padrão de desenvolvimento
-- [Insomnia ou outro aplicativo para testar a API](https://insomnia.rest/download) | Testes da API
-- [Swagger](https://swagger.io/) | Documentação da API
-
-## [Funcionalidades](/docs/funcionalidades.md)
-
-- Autenticação
-- Gerenciamento de Projectos
-- Gerenciamento de Eventos
-  - Convidar pessoas
+- [NestJS](https://www.fastify.io/)
+- [Prisma](https://www.prisma.io/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [MySQL](https://www.mysql.com/)
+- [Microserviços](https://microservices.io/)
+- [Insomnia ou outro aplicativo para testar a API](https://insomnia.rest/download)
+- [Swagger](https://swagger.io/)
 
 ## Instalação e execução do projeto
 
@@ -37,11 +30,11 @@ copia o arquivo `.env.example` e renomeia a copia para `.env` e preencha as vari
 # Exemplo
 JWT_SECRET = 'alguma-coisa-qualquer'
 
-# Exemplo: 10h, 7d 
+# Exemplo: 10h, 7d
 JWT_EXPIRE = '30d'
 
 # DATABASE_URL = 'mysql://nome-usuario:@host:port/nome-base-de-dados'
-DATABASE_URL = 'mysql://root:@localhost:3306/programador_ao_db' 
+DATABASE_URL = 'mysql://root:@localhost:3306/programador_ao_db'
 ```
 
 ## Executando as migrations
@@ -81,7 +74,6 @@ npm run test:cov
 ```bash
 # build (pasta: dist)
 npm run build
-
 ```
 
 ## Endpoints
@@ -89,7 +81,7 @@ npm run build
 - Documentação (Swagger): `POST:  host:port/`
 - Fazer login: `POST:  host:port/v1/auth/logar`
 - Fazer o cadastro: `POST:  host:port/v1/auth/registrar`
-- Buscar o perfil:  `GET:   host:port/v1/usuarios/perfil`
+- Buscar o perfil: `GET:   host:port/v1/usuarios/perfil`
 
 ## Suporte
 

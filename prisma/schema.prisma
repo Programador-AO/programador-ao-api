@@ -26,9 +26,9 @@ model Usuario {
   senhaHash                   String      @map("senha_hash") @db.Text
   avatar                      String?     @default("null")
   tipo                        TipoUsuario @default(MEMBRO)
-  recuperarSenhaToken         String?     @default("null") @map("recuperar_senha_token")
-  recuperarSenhaDataExpiracao String?     @default("null") @map("recuperar_senha_data_expiracao")
-  tokenVerificacaoEmail       String?     @default("null") @map("token_verificacao_email")
+  recuperarSenhaToken         String?     @map("recuperar_senha_token") @db.Text
+  recuperarSenhaDataExpiracao String?     @map("recuperar_senha_data_expiracao") @db.Text
+  tokenVerificacaoEmail       String?     @map("token_verificacao_email") @db.Text
   activo                      Boolean     @default(true)
   createdAt                   DateTime    @default(now()) @map("created_at")
   updatedAt                   DateTime    @default(now()) @map("updated_at")

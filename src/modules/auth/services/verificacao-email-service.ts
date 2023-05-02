@@ -59,19 +59,16 @@ export class VerificacaoEmailService {
       throw new BadRequestException('Erro ao enviar e-mail de verificação');
   }
 
-  async verificar(id: string, token: string) {
+  async verificar(token: string) {
     if (isEmpty(token))
       throw new BadRequestException('token: Campo obrigatário.');
-
-    const usuario = await this.usuarioRepository.getById(id);
-    if (usuario?.tokenVerificacaoEmail !== token)
-      throw new BadRequestException('Token inválido');
 
     const payload = await this.jwtService.verifyAsync(token, {
       secret: authConfig().jwtSecret,
     });
 
-    if (payload.id !== usuario?.id)
+    const usuario = await this.usuarioRepository.getById(payload.id);
+    if (usuario?.tokenVerificacaoEmail !== token)
       throw new BadRequestException('Token inválido');
 
     if (payload.email !== usuario?.email)
