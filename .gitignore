@@ -51,3 +51,5 @@ pnpm-lock.yaml
 /.env.local
 /src/auth-supertokens
 .env
+/FIREBASE.md
+/programador-ao-firebase-adminsdk.json

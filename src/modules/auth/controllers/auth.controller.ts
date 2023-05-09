@@ -1,30 +1,40 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   Post,
+  Query,
   Req,
-  HttpException,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard as AuthGuardPassport } from '@nestjs/passport';
+import { ApiQuery } from '@nestjs/swagger';
 
+import { AuthGuard } from '../guards/auth.guard';
 import { Public } from '../guards/routes-visibility';
-import { AuthGuard } from '../../auth/guards/auth-guard';
 
-import { LoginSenhaDto } from './dtos/login-senha-dto';
-import { AlterarSenhaDto } from './dtos/alterar-senha-dto';
-import { VerificarEmailDto } from './dtos/verificar-email-dto';
-import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
 import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
+import { AlterarSenhaDto } from './dtos/alterar-senha-dto';
+import { LoginSenhaDto } from './dtos/login-senha-dto';
+import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
+import { VerificarEmailDto } from './dtos/verificar-email-dto';
 
-import { LoginSenhaService } from '../services/login-senha-service';
-import { AlterarSenhaService } from '../services/alterar-senha-service';
-import { VerificacaoEmailService } from '../services/verificacao-email-service';
-import { AlterarDadosAutenticacaoService } from '../services/alterar-dados-autenticacao-service';
-import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha-service';
+import { AlterarDadosAutenticacaoService } from '../services/alterar-dados-autenticacao.service';
+import { AlterarSenhaService } from '../services/alterar-senha.service';
+import { LoginSenhaService } from '../services/login-senha.service';
+import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha.service';
+import { VerificacaoEmailService } from '../services/verificacao-email.service';
 
 import { RequestCustom } from '../../../helpers/request-custom';
+import { GithubStrategy } from '../strategies/github-strategy';
+import { EsqueciMinhaSenhaService } from '../services/esqueci-minha-senha.service';
+import { RecuperarMinhaSenhaService } from '../services/recuperar-minha-senha.service';
+import { EsqueciMinhaSenhaDto } from './dtos/esqueci-minha-senha-dto';
+import { RedefinirMinhaSenhaDto } from './dtos/redefinir-minha-senha-dto';
+import { RedefinirSenhaService } from '../services/redefinir-senha.service';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +44,10 @@ export class AuthController {
     private alterarSenhaService: AlterarSenhaService,
     private alterarDadosAutenticacaoService: AlterarDadosAutenticacaoService,
     private verificacaoEmailService: VerificacaoEmailService,
+    private esqueciMinhaSenhaService: EsqueciMinhaSenhaService,
+    private recuperarMinhaSenhaService: RecuperarMinhaSenhaService,
+    private redefinirSenhaService: RedefinirSenhaService,
+    private githubStrategy: GithubStrategy,
   ) {}
 
   @Public()
@@ -143,5 +157,93 @@ export class AuthController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Post('esqueci-minha-senha')
+  @HttpCode(HttpStatus.OK)
+  @Public()
+  async esqueciMinhaSenha(@Body() { email }: EsqueciMinhaSenhaDto) {
+    try {
+      await this.esqueciMinhaSenhaService.execute(email);
+
+      return {
+        message:
+          'Um email de recuperação de senha foi enviado para o endereço fornecido. Por favor, verifique sua caixa de entrada e siga as instruções para redefinir sua senha.',
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao solicitar recuperação de senha',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get('recuperar-minha-senha')
+  @HttpCode(HttpStatus.OK)
+  @Public()
+  @ApiQuery({ name: 'token', type: String })
+  async recuperarSenha(@Query('token') token: string) {
+    try {
+      const { codigo } = await this.recuperarMinhaSenhaService.execute(token);
+
+      return {
+        message: 'Código para redefinição de senha',
+        codigo,
+      };
+    } catch (e) {
+      throw new HttpException(
+        'Erro ao recuperar a senha',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Post('redefinir-minha-senha')
+  @HttpCode(HttpStatus.OK)
+  @Public()
+  async redefinirMinhaSenha(@Body() input: RedefinirMinhaSenhaDto) {
+    const { email, codigo, nova_senha } = input;
+
+    try {
+      await this.redefinirSenhaService.execute(email, codigo, nova_senha);
+
+      return { message: 'Senha atualizada com sucesso.' };
+    } catch (e) {
+      throw new HttpException(
+        'Erro ao redefinir a senha',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get('google')
+  @Public()
+  @UseGuards(AuthGuardPassport('google'))
+  async googleAuth() {
+    return;
+  }
+
+  @Get('google/callback')
+  @Public()
+  @UseGuards(AuthGuardPassport('google'))
+  async googleAuthRedirect(@Req() req) {
+    return {
+      message: 'Google authentication successful!',
+      user: req.user,
+    };
+  }
+
+  @Get('github')
+  @Public()
+  @UseGuards(AuthGuardPassport('github'))
+  githubAuth() {
+    return;
+  }
+
+  @Get('github/callback')
+  @UseGuards(AuthGuardPassport('github'))
+  async githubAuthRedirect(@Req() req) {
+    console.log(req);
+    return;
   }
 }

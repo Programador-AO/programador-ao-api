@@ -5,7 +5,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { SessionRepository } from '../../../database/prisma/repositories/session-repository';
 import { UsuarioRepository } from '../../../database/prisma/repositories/usuario-repository';
 
-import { useTransport } from '../../../config/mailer';
+import { useTransport } from '../../../config/mailer.config';
 import appConfig from '../../../config/app.config';
 import authConfig from '../../../config/auth.config';
 
@@ -25,6 +25,7 @@ export class VerificacaoEmailService {
       throw new BadRequestException('Email já verificado');
 
     const { emailSuporte, websiteDomain } = appConfig();
+
     if (!emailSuporte)
       throw new BadRequestException('Email de suporte não configurado');
 

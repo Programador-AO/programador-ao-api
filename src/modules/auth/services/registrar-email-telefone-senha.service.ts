@@ -21,7 +21,9 @@ export class RegistrarEmailTelefoneSenhaService {
   async execute(data: UsuarioInterface) {
     await this.validarRegistro(data);
     const senhaHash = await bcrypt.hash(data.senhaHash ?? '', 8);
-    await this.usuarioRepository.create({ ...data, senhaHash });
+    const usuario = await this.usuarioRepository.create({ ...data, senhaHash });
+
+    return { usuario };
   }
 
   private async validarRegistro(data: UsuarioInterface) {

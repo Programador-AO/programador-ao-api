@@ -18,16 +18,15 @@ enum TipoUsuario {
 model Usuario {
   id                          String      @id @default(uuid())
   nomeCompleto                String
-  nomeUsuario                 String      @unique
+  nomeUsuario                 String?     @unique
   email                       String      @unique
-  telefone                    String      @unique
+  telefone                    String?     @unique
   emailVerificado             Boolean     @default(false) @map("email_verificado")
   telefoneVerificado          Boolean     @default(false) @map("telefone_verificado")
   senhaHash                   String      @map("senha_hash") @db.Text
   avatar                      String?     @default("null")
   tipo                        TipoUsuario @default(MEMBRO)
-  recuperarSenhaToken         String?     @map("recuperar_senha_token") @db.Text
-  recuperarSenhaDataExpiracao String?     @map("recuperar_senha_data_expiracao") @db.Text
+  tokenRecuperarSenha         String?     @map("token_recuperar_senha") @db.Text
   tokenVerificacaoEmail       String?     @map("token_verificacao_email") @db.Text
   activo                      Boolean     @default(true)
   createdAt                   DateTime    @default(now()) @map("created_at")

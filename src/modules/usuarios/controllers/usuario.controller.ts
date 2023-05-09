@@ -1,9 +1,9 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 
-import { AuthGuard } from '../../auth/guards/auth-guard';
-import { UsuarioService } from '../services/usuario-service';
-import { RequestCustom } from '../../../helpers/request-custom';
 import { ControllerUsuarioMapper } from '../../../database/prisma/mappers/controller-usuario-mapper';
+import { RequestCustom } from '../../../helpers/request-custom';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { UsuarioService } from '../services/usuario-service';
 
 @Controller('usuarios')
 export class UsuarioController {
