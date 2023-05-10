@@ -7,6 +7,7 @@
         "sessao",
         "soliciatacao",
         "solicitacao",
+        "unidecode",
         "usuarios",
         "verificacao"
     ]

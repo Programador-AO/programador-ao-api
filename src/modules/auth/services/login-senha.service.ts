@@ -46,7 +46,7 @@ export class LoginSenhaService {
 
     if (!usuario.activo) throw new BadRequestException('Usuário desativado');
 
-    const senhaValida = await bcrypt.compare(senha, usuario.senhaHash);
+    const senhaValida = await bcrypt.compare(senha, usuario.senhaHash ?? '');
     if (!senhaValida) throw new UnauthorizedException();
 
     const payload = {

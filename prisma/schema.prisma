@@ -16,25 +16,36 @@ enum TipoUsuario {
 }
 
 model Usuario {
-  id                          String      @id @default(uuid())
-  nomeCompleto                String
-  nomeUsuario                 String?     @unique
-  email                       String      @unique
-  telefone                    String?     @unique
-  emailVerificado             Boolean     @default(false) @map("email_verificado")
-  telefoneVerificado          Boolean     @default(false) @map("telefone_verificado")
-  senhaHash                   String      @map("senha_hash") @db.Text
-  avatar                      String?     @default("null")
-  tipo                        TipoUsuario @default(MEMBRO)
-  tokenRecuperarSenha         String?     @map("token_recuperar_senha") @db.Text
-  tokenVerificacaoEmail       String?     @map("token_verificacao_email") @db.Text
-  activo                      Boolean     @default(true)
-  createdAt                   DateTime    @default(now()) @map("created_at")
-  updatedAt                   DateTime    @default(now()) @map("updated_at")
-  deletedAt                   DateTime?   @map("deleted_at")
+  id                    String      @id @default(uuid())
+  nomeCompleto          String
+  nomeUsuario           String?     @unique
+  email                 String?      @unique
+  telefone              String?     @unique
+  emailVerificado       Boolean     @default(false) @map("email_verificado")
+  telefoneVerificado    Boolean     @default(false) @map("telefone_verificado")
+  senhaHash             String?     @map("senha_hash") @db.Text
+  avatar                String?     @db.Text
+  tipo                  TipoUsuario @default(MEMBRO)
+  tokenRecuperarSenha   String?     @map("token_recuperar_senha") @db.Text
+  tokenVerificacaoEmail String?     @map("token_verificacao_email") @db.Text
+  activo                Boolean     @default(true)
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @default(now()) @map("updated_at")
+  deletedAt             DateTime?   @map("deleted_at")
 
   @@index([email, telefone])
   @@map("usuarios")
+}
+
+model AutenticacaoProvider {
+  id                String   @id @default(uuid())
+  provider          String   @map("provider")
+  usuarioProviderId String   @map("usuario_provider_id")
+  usuarioId         String   @map("usuario_id")
+  email             String?  @unique
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@map("autenticacao_provider")
 }
 
 model Sessao {

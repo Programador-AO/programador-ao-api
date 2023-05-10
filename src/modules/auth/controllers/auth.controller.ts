@@ -8,34 +8,40 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard as AuthGuardPassport } from '@nestjs/passport';
 import { ApiQuery } from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import { AuthGuard as AuthGuardPassport } from '@nestjs/passport';
 
 import { AuthGuard } from '../guards/auth.guard';
 import { Public } from '../guards/routes-visibility';
 
-import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
-import { AlterarSenhaDto } from './dtos/alterar-senha-dto';
 import { LoginSenhaDto } from './dtos/login-senha-dto';
-import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
+import { AlterarSenhaDto } from './dtos/alterar-senha-dto';
 import { VerificarEmailDto } from './dtos/verificar-email-dto';
+import { EsqueciMinhaSenhaDto } from './dtos/esqueci-minha-senha-dto';
+import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
+import { RedefinirMinhaSenhaDto } from './dtos/redefinir-minha-senha-dto';
+import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
 
-import { AlterarDadosAutenticacaoService } from '../services/alterar-dados-autenticacao.service';
-import { AlterarSenhaService } from '../services/alterar-senha.service';
 import { LoginSenhaService } from '../services/login-senha.service';
-import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha.service';
+import { AlterarSenhaService } from '../services/alterar-senha.service';
+import { RedefinirSenhaService } from '../services/redefinir-senha.service';
 import { VerificacaoEmailService } from '../services/verificacao-email.service';
+import { EsqueciMinhaSenhaService } from '../services/esqueci-minha-senha.service';
+import { RecuperarMinhaSenhaService } from '../services/recuperar-minha-senha.service';
+import { AlterarDadosAutenticacaoService } from '../services/alterar-dados-autenticacao.service';
+import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha.service';
 
 import { RequestCustom } from '../../../helpers/request-custom';
 import { GithubStrategy } from '../strategies/github-strategy';
-import { EsqueciMinhaSenhaService } from '../services/esqueci-minha-senha.service';
-import { RecuperarMinhaSenhaService } from '../services/recuperar-minha-senha.service';
-import { EsqueciMinhaSenhaDto } from './dtos/esqueci-minha-senha-dto';
-import { RedefinirMinhaSenhaDto } from './dtos/redefinir-minha-senha-dto';
-import { RedefinirSenhaService } from '../services/redefinir-senha.service';
 
+import { FirebaseAuthGuard } from '@whitecloak/nestjs-passport-firebase';
+
+import { getAuth, signInWithRedirect, GithubAuthProvider } from 'firebase/auth';
+import { FirebaseService } from '../services/firebase.service';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -48,6 +54,7 @@ export class AuthController {
     private recuperarMinhaSenhaService: RecuperarMinhaSenhaService,
     private redefinirSenhaService: RedefinirSenhaService,
     private githubStrategy: GithubStrategy,
+    private firebaseService: FirebaseService,
   ) {}
 
   @Public()
@@ -236,14 +243,26 @@ export class AuthController {
   @Get('github')
   @Public()
   @UseGuards(AuthGuardPassport('github'))
-  githubAuth() {
+  async githubAuth() {
     return;
   }
 
   @Get('github/callback')
+  @Public()
   @UseGuards(AuthGuardPassport('github'))
-  async githubAuthRedirect(@Req() req) {
-    console.log(req);
-    return;
+  async githubAuthRedirect(@Req() req, @Res() res) {
+    console.log(req.user.usuarioId);
+
+    res.redirect(`https://example.com/?token=`);
+  }
+
+  @Get('firebase')
+  @Public()
+  firebaseAuth() {
+    const provider = new GithubAuthProvider();
+    const auth = getAuth(this.firebaseService.initApp());
+    signInWithRedirect(auth, provider);
+
+    return signInWithRedirect(auth, provider);
   }
 }

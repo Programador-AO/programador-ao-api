@@ -50,7 +50,7 @@ export class EsqueciMinhaSenhaService {
 
     const sendMailConfig = {
       from: emailSuporte,
-      to: usuario.email,
+      to: usuario.email ?? '',
       subject: 'Recuperar senha [Programador AO]',
       template: 'autenticacao/recuperar_senha',
       context: {

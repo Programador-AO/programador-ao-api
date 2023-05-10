@@ -5,7 +5,7 @@ import { isEmail, isEmpty } from 'class-validator';
 
 import { SessionRepository } from '../../../database/prisma/repositories/session-repository';
 import { UsuarioRepository } from '../../../database/prisma/repositories/usuario-repository';
-import { isValidNomeUsuario } from '../../../helpers/regex';
+import { isValidNomeUsuario } from '../../../helpers/username-helper';
 import { UsuarioInterface } from '../../usuarios/interfaces/usuario-interface';
 import { UsuarioService } from '../../usuarios/services/usuario-service';
 

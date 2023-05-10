@@ -1,7 +1,4 @@
-import {
-  toCamelCase,
-  toSnakeCase,
-} from '../../src/helpers/convert-property-case';
+import { toCamelCase, toSnakeCase } from '@helpers/convert-property-case';
 
 test('converte propriedades de camelCase para snake_case', () => {
   const myObject = {

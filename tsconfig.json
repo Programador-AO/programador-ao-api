@@ -25,7 +25,7 @@
       "@database/*": ["./src/database/*"],
       "@helpers/*": ["./src/helpers/*"],
       "@modules/*": ["./src/modules/*"],
-      "@tests/*": ["tests/*"]
+      "@tests/*": ["./tests/*"]
     }
   }
 }

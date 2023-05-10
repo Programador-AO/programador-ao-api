@@ -37,7 +37,7 @@ export class VerificacaoEmailService {
 
     const sendMailConfig = {
       from: emailSuporte,
-      to: usuario.email,
+      to: usuario.email ?? '',
       subject: 'Verificação de e-mail [Programador AO]',
       template: 'autenticacao/verificar_email',
       context: {

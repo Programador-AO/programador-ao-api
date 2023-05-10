@@ -27,7 +27,10 @@ export class AlterarSenhaService {
     if (!usuario) throw new BadRequestException('Usuário não existe');
     if (!usuario.activo) throw new BadRequestException('Usuário desativado.');
 
-    const senhaValida = await bcrypt.compare(senhaAntiga, usuario.senhaHash);
+    const senhaValida = await bcrypt.compare(
+      senhaAntiga,
+      usuario.senhaHash ?? '',
+    );
     if (!senhaValida) throw new BadRequestException('Senha antiga inválida.');
 
     const senhaHash = await bcrypt.hash(senhaNova, 8);
