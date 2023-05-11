@@ -2,10 +2,8 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { isEmpty } from 'class-validator';
 
 import { SessionRepository } from '../../../database/prisma/repositories/session-repository';
@@ -13,28 +11,24 @@ import { UsuarioRepository } from '../../../database/prisma/repositories/usuario
 import { LoginResponseInterface } from '../interfaces/auth-interface';
 
 @Injectable()
-export class LoginSenhaService {
+export class LoginGithubService {
   constructor(
     private usuarioRepository: UsuarioRepository,
     private sessionRepository: SessionRepository,
     private jwtService: JwtService,
   ) {}
 
-  async execute(login: string, senha: string): Promise<LoginResponseInterface> {
-    if (isEmpty(login))
-      throw new BadRequestException('login: Campo obrigatório');
+  async execute(usuarioId: string): Promise<LoginResponseInterface> {
+    if (isEmpty(usuarioId))
+      throw new BadRequestException('usuarioId: Campo obrigatório');
 
-    if (isEmpty(senha))
-      throw new BadRequestException('senha: Campo obrigatório');
-
-    let usuario = await this.usuarioRepository.getByEmail(login);
-
-    if (!usuario) usuario = await this.usuarioRepository.getByTelefone(login);
-
-    if (!usuario)
-      usuario = await this.usuarioRepository.getByNomeUsuario(login);
+    const usuario = await this.usuarioRepository.getById(usuarioId);
 
     if (!usuario) throw new NotFoundException();
+
+    // const session = await this.sessionRepository.findOne({
+    //   where: { usuario: usuario.id },
+    // });
 
     // const session = await this.sessionRepository.findOne({
     //   where: { usuario: usuario.id },
@@ -42,9 +36,6 @@ export class LoginSenhaService {
     // if (session) throw new BadRequestException('Usuário já está logado');
 
     if (!usuario.activo) throw new BadRequestException('Usuário desativado');
-
-    const senhaValida = await bcrypt.compare(senha, usuario.senhaHash ?? '');
-    if (!senhaValida) throw new UnauthorizedException();
 
     const payload = {
       id: usuario.id,

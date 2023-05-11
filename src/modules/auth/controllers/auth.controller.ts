@@ -8,11 +8,9 @@ import {
   Post,
   Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiQuery } from '@nestjs/swagger';
-import { Request, Response } from 'express';
 import { AuthGuard as AuthGuardPassport } from '@nestjs/passport';
 
 import { AuthGuard } from '../guards/auth.guard';
@@ -27,6 +25,7 @@ import { RedefinirMinhaSenhaDto } from './dtos/redefinir-minha-senha-dto';
 import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
 
 import { LoginSenhaService } from '../services/login-senha.service';
+import { LoginGithubService } from '../services/login-github.service';
 import { AlterarSenhaService } from '../services/alterar-senha.service';
 import { RedefinirSenhaService } from '../services/redefinir-senha.service';
 import { VerificacaoEmailService } from '../services/verificacao-email.service';
@@ -38,14 +37,11 @@ import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-
 import { RequestCustom } from '../../../helpers/request-custom';
 import { GithubStrategy } from '../strategies/github-strategy';
 
-import { FirebaseAuthGuard } from '@whitecloak/nestjs-passport-firebase';
-
-import { getAuth, signInWithRedirect, GithubAuthProvider } from 'firebase/auth';
-import { FirebaseService } from '../services/firebase.service';
 @Controller('auth')
 export class AuthController {
   constructor(
     private loginSenhaService: LoginSenhaService,
+    private loginGithubService: LoginGithubService,
     private registrarEmailTelefoneSenhaService: RegistrarEmailTelefoneSenhaService,
     private alterarSenhaService: AlterarSenhaService,
     private alterarDadosAutenticacaoService: AlterarDadosAutenticacaoService,
@@ -54,7 +50,6 @@ export class AuthController {
     private recuperarMinhaSenhaService: RecuperarMinhaSenhaService,
     private redefinirSenhaService: RedefinirSenhaService,
     private githubStrategy: GithubStrategy,
-    private firebaseService: FirebaseService,
   ) {}
 
   @Public()
@@ -250,19 +245,11 @@ export class AuthController {
   @Get('github/callback')
   @Public()
   @UseGuards(AuthGuardPassport('github'))
-  async githubAuthRedirect(@Req() req, @Res() res) {
-    console.log(req.user.usuarioId);
-
-    res.redirect(`https://example.com/?token=`);
-  }
-
-  @Get('firebase')
-  @Public()
-  firebaseAuth() {
-    const provider = new GithubAuthProvider();
-    const auth = getAuth(this.firebaseService.initApp());
-    signInWithRedirect(auth, provider);
-
-    return signInWithRedirect(auth, provider);
+  async githubAuthRedirect(@Req() req) {
+    try {
+      return this.loginGithubService.execute(req.user.usuarioId);
+    } catch (error) {
+      throw new HttpException('Erro ao logar', HttpStatus.BAD_REQUEST);
+    }
   }
 }

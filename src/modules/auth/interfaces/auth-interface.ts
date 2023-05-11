@@ -3,7 +3,7 @@ export interface AuthInterface {
   password: string;
 }
 
-export interface LoginEmailPasswordResponseInterface {
+export interface LoginResponseInterface {
   usuario: any;
   token: string;
 }
