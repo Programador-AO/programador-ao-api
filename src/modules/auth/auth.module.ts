@@ -8,19 +8,20 @@ import { UsuarioModule } from '../usuarios/usuario-module';
 import { AuthController } from './controllers/auth.controller';
 import { AuthGuard } from './guards/auth.guard';
 
-import { FirebaseService } from './services/firebase.service';
-import { LoginSenhaService } from './services/login-senha.service';
-import { LoginGithubService } from './services/login-github.service';
-import { AlterarSenhaService } from './services/alterar-senha.service';
-import { RedefinirSenhaService } from './services/redefinir-senha.service';
-import { VerificacaoEmailService } from './services/verificacao-email.service';
-import { EsqueciMinhaSenhaService } from './services/esqueci-minha-senha.service';
-import { RecuperarMinhaSenhaService } from './services/recuperar-minha-senha.service';
 import { AlterarDadosAutenticacaoService } from './services/alterar-dados-autenticacao.service';
+import { AlterarSenhaService } from './services/alterar-senha.service';
+import { EsqueciMinhaSenhaService } from './services/esqueci-minha-senha.service';
+import { FirebaseService } from './services/firebase.service';
+import { LoginProviderService } from './services/login-provider.service';
+import { LoginSenhaService } from './services/login-senha.service';
+import { RecuperarMinhaSenhaService } from './services/recuperar-minha-senha.service';
+import { RedefinirSenhaService } from './services/redefinir-senha.service';
 import { RegistrarEmailTelefoneSenhaService } from './services/registrar-email-telefone-senha.service';
+import { VerificacaoEmailService } from './services/verificacao-email.service';
 
 import { GithubStrategy } from './strategies/github-strategy';
 import { GoogleStrategy } from './strategies/google-strategy';
+import { StrategyService } from './services/strategy.service';
 
 @Module({
   providers: [],
@@ -34,7 +35,7 @@ export class AuthModule {
       module: AuthModule,
       providers: [
         LoginSenhaService,
-        LoginGithubService,
+        LoginProviderService,
         RegistrarEmailTelefoneSenhaService,
         AlterarSenhaService,
         AlterarDadosAutenticacaoService,
@@ -42,6 +43,7 @@ export class AuthModule {
         EsqueciMinhaSenhaService,
         RecuperarMinhaSenhaService,
         RedefinirSenhaService,
+        StrategyService,
         {
           provide: APP_GUARD,
           useClass: AuthGuard,

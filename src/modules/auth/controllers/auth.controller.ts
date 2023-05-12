@@ -8,40 +8,48 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiQuery } from '@nestjs/swagger';
 import { AuthGuard as AuthGuardPassport } from '@nestjs/passport';
+import { ApiQuery } from '@nestjs/swagger';
+import { Response } from 'express';
 
 import { AuthGuard } from '../guards/auth.guard';
 import { Public } from '../guards/routes-visibility';
 
-import { LoginSenhaDto } from './dtos/login-senha-dto';
-import { AlterarSenhaDto } from './dtos/alterar-senha-dto';
-import { VerificarEmailDto } from './dtos/verificar-email-dto';
-import { EsqueciMinhaSenhaDto } from './dtos/esqueci-minha-senha-dto';
-import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
-import { RedefinirMinhaSenhaDto } from './dtos/redefinir-minha-senha-dto';
 import { AlterarDadosAutenticacaoDto } from './dtos/alterar-dados-autenticacao-dto';
+import { AlterarSenhaDto } from './dtos/alterar-senha-dto';
+import { EsqueciMinhaSenhaDto } from './dtos/esqueci-minha-senha-dto';
+import { LoginSenhaDto } from './dtos/login-senha-dto';
+import { RedefinirMinhaSenhaDto } from './dtos/redefinir-minha-senha-dto';
+import { RegisterEmailSenhaDto } from './dtos/register-email-senha-dto';
+import { VerificarEmailDto } from './dtos/verificar-email-dto';
 
-import { LoginSenhaService } from '../services/login-senha.service';
-import { LoginGithubService } from '../services/login-github.service';
-import { AlterarSenhaService } from '../services/alterar-senha.service';
-import { RedefinirSenhaService } from '../services/redefinir-senha.service';
-import { VerificacaoEmailService } from '../services/verificacao-email.service';
-import { EsqueciMinhaSenhaService } from '../services/esqueci-minha-senha.service';
-import { RecuperarMinhaSenhaService } from '../services/recuperar-minha-senha.service';
 import { AlterarDadosAutenticacaoService } from '../services/alterar-dados-autenticacao.service';
+import { AlterarSenhaService } from '../services/alterar-senha.service';
+import { EsqueciMinhaSenhaService } from '../services/esqueci-minha-senha.service';
+import { LoginProviderService } from '../services/login-provider.service';
+import { LoginSenhaService } from '../services/login-senha.service';
+import { RecuperarMinhaSenhaService } from '../services/recuperar-minha-senha.service';
+import { RedefinirSenhaService } from '../services/redefinir-senha.service';
 import { RegistrarEmailTelefoneSenhaService } from '../services/registrar-email-telefone-senha.service';
+import { VerificacaoEmailService } from '../services/verificacao-email.service';
 
 import { RequestCustom } from '../../../helpers/request-custom';
 import { GithubStrategy } from '../strategies/github-strategy';
+
+import appConfig from '../../../config/app.config';
+import authConfig from '../../../config/auth.config';
+
+const { websiteDomain } = appConfig();
+const { authCallbackUrlWebsite } = authConfig();
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private loginSenhaService: LoginSenhaService,
-    private loginGithubService: LoginGithubService,
+    private loginProviderService: LoginProviderService,
     private registrarEmailTelefoneSenhaService: RegistrarEmailTelefoneSenhaService,
     private alterarSenhaService: AlterarSenhaService,
     private alterarDadosAutenticacaoService: AlterarDadosAutenticacaoService,
@@ -229,10 +237,17 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuardPassport('google'))
   async googleAuthRedirect(@Req() req) {
-    return {
-      message: 'Google authentication successful!',
-      user: req.user,
-    };
+    try {
+      return await this.loginProviderService.execute(req.user.usuarioId);
+
+      // return res.redirect(
+      //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
+      //     result,
+      //   )}`,
+      // );
+    } catch (error) {
+      throw new HttpException('Erro ao logar', HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('github')
@@ -245,9 +260,15 @@ export class AuthController {
   @Get('github/callback')
   @Public()
   @UseGuards(AuthGuardPassport('github'))
-  async githubAuthRedirect(@Req() req) {
+  async githubAuthRedirect(@Req() req, @Res() res: Response) {
     try {
-      return this.loginGithubService.execute(req.user.usuarioId);
+      return await this.loginProviderService.execute(req.user.usuarioId);
+
+      // return res.redirect(
+      //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
+      //     result,
+      //   )}`,
+      // );
     } catch (error) {
       throw new HttpException('Erro ao logar', HttpStatus.BAD_REQUEST);
     }

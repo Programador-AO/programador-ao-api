@@ -11,7 +11,7 @@ import { UsuarioRepository } from '../../../database/prisma/repositories/usuario
 import { LoginResponseInterface } from '../interfaces/auth-interface';
 
 @Injectable()
-export class LoginGithubService {
+export class LoginProviderService {
   constructor(
     private usuarioRepository: UsuarioRepository,
     private sessionRepository: SessionRepository,

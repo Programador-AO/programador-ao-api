@@ -1,13 +1,10 @@
 import { Strategy } from 'passport-github';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 
+import { StrategyService } from '../services/strategy.service';
 import appConfig from '@config/app.config';
 import authConfig from '@config/auth.config';
-import { UsuarioRepository } from '@database/prisma/repositories/usuario-repository';
-import { AutenticacaoProviderRepository } from '@database/prisma/repositories/autenticacao-provider-repository';
-
-import { formatUsername, isValidNomeUsuario } from '@helpers/username-helper';
 
 const { githubClientId, githubClientSecret, githubCallbackURL } = authConfig();
 const { apiDomain } = appConfig();
@@ -32,10 +29,7 @@ interface Profile {
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
-  constructor(
-    private usuarioRepository: UsuarioRepository,
-    private autenticacaoProviderRepository: AutenticacaoProviderRepository,
-  ) {
+  constructor(private strategyService: StrategyService) {
     super({
       clientID: githubClientId,
       clientSecret: githubClientSecret,
@@ -53,115 +47,49 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     const { id } = profile;
     const { email, login, name, avatar_url } = profile._json;
 
+    const provider = 'github';
     const access = {
       accessToken,
       refreshToken,
-      provider: 'github',
+      provider,
       providerId: id,
     };
 
-    const authProvider =
-      await this.autenticacaoProviderRepository.getByUsuarioProviderId(
-        'github',
-        id,
-      );
+    // Verificar se o provider existe
+    const usuarioVerificado =
+      await this.strategyService.verificarActualizarUsuario({
+        provider,
+        providerId: id,
+        name,
+        avatar: avatar_url,
+      });
 
-    // #region Regras caso o provider exista
-    if (authProvider) {
-      const usuario = await this.usuarioRepository.getById(
-        authProvider.usuarioId,
-      );
+    if (usuarioVerificado)
+      return done(null, { ...access, usuarioId: usuarioVerificado.id });
 
-      if (usuario) {
-        if (usuario.nomeCompleto !== name || usuario.avatar !== avatar_url) {
-          const result = await this.usuarioRepository.update(usuario.id, {
-            ...usuario,
-            nomeCompleto: name,
-            avatar: avatar_url,
-          });
+    // Verificar se o email existe e criar o provider
+    const emailUsuarioVerificado =
+      await this.strategyService.verificarEmailUsuario({
+        provider,
+        providerId: id,
+        email,
+      });
 
-          if (!result)
-            throw new BadRequestException(
-              'Não foi possível autenticar o usuário',
-            );
-        }
+    if (emailUsuarioVerificado)
+      return done(null, { ...access, usuarioId: emailUsuarioVerificado.id });
 
-        return done(null, { ...access, usuarioId: usuario.id });
-      }
-    }
-    //#endregion
-
-    //#region Regras caso o provider não exista mas já exista um usuário com o email
-    if (email) {
-      const usuario = await this.usuarioRepository.getByEmail(email);
-
-      if (usuario) {
-        const result = await this.autenticacaoProviderRepository.create({
-          provider: 'github',
-          usuarioId: usuario.id,
-          usuarioProviderId: id,
-          email,
-        });
-
-        if (!result)
-          throw new BadRequestException(
-            'Não foi possível autenticar o usuário',
-          );
-
-        return done(null, { ...access, usuarioId: usuario.id });
-      }
-    }
-    // #endregion
-
-    // #region Regras caso o provider não exista nem exista um usuário com o email
-    // Verificar se o nome é válido
-    let nomeUsuario = login ?? name;
-    const nomeValido = isValidNomeUsuario(nomeUsuario);
-    if (!nomeValido) nomeUsuario = formatUsername(nomeUsuario);
-
-    // Verificar se o nome existe se já existe e gerar um nome caso exista
-    nomeUsuario = await this.sugerirNovoNomeUsuario(nomeUsuario);
-    const usuario = await this.usuarioRepository.create({
+    // Criar o usuario e o provider
+    const resultUsuario = await this.strategyService.criarNovoUsuarioProvider({
       nomeCompleto: name,
-      nomeUsuario,
+      login,
       email,
       emailVerificado: !!email,
       avatar: avatar_url,
       tipo: 'MEMBRO',
+      provider,
+      providerId: id,
     });
 
-    if (usuario) {
-      const result = await this.autenticacaoProviderRepository.create({
-        provider: 'github',
-        usuarioId: usuario.id,
-        usuarioProviderId: id,
-        email,
-      });
-
-      if (!result)
-        throw new BadRequestException('Não foi possível autenticar o usuário');
-    }
-
-    return done(null, { ...access, usuarioId: usuario.id });
-    // #endregion
+    return done(null, { ...access, usuarioId: resultUsuario.id });
   }
-
-  sugerirNovoNomeUsuario = async (nomeUsuario: string): Promise<string> => {
-    let novoNomeUsuario = nomeUsuario;
-    const usernameExists = true;
-    let counter = 1;
-
-    while (usernameExists) {
-      const usuario = await this.usuarioRepository.getByNomeUsuario(
-        novoNomeUsuario,
-      );
-
-      if (!usuario) return novoNomeUsuario;
-
-      novoNomeUsuario = `${nomeUsuario}${counter}`;
-      counter++;
-    }
-
-    return novoNomeUsuario;
-  };
 }
