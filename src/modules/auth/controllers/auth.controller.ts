@@ -64,30 +64,22 @@ export class AuthController {
   @Post('logar')
   @HttpCode(HttpStatus.OK)
   loginSenha(@Body() input: LoginSenhaDto) {
-    try {
-      return this.loginSenhaService.execute(input.login, input.senha);
-    } catch (error) {
-      throw new HttpException('Erro ao logar', HttpStatus.BAD_REQUEST);
-    }
+    return this.loginSenhaService.execute(input.login, input.senha);
   }
 
   @Public()
   @Post('registrar')
   @HttpCode(HttpStatus.OK)
   async registerEmailTelefoneSenha(@Body() input: RegisterEmailSenhaDto) {
-    try {
-      await this.registrarEmailTelefoneSenhaService.execute({
-        nomeCompleto: input.nome_completo,
-        nomeUsuario: input.nome_usuario,
-        email: input.email,
-        telefone: input.telefone,
-        senhaHash: input.senha,
-      });
+    await this.registrarEmailTelefoneSenhaService.execute({
+      nomeCompleto: input.nome_completo,
+      nomeUsuario: input.nome_usuario,
+      email: input.email,
+      telefone: input.telefone,
+      senhaHash: input.senha,
+    });
 
-      return { message: 'Registrado com sucesso!' };
-    } catch (error) {
-      throw new HttpException('Erro ao registrar', HttpStatus.BAD_REQUEST);
-    }
+    return { message: 'Registrado com sucesso!' };
   }
 
   @Post('alterar-senha')
@@ -103,13 +95,9 @@ export class AuthController {
       senha_nova,
     } = { id: req.usuario?.id, ...input };
 
-    try {
-      await this.alterarSenhaService.execute(id, senha_antiga, senha_nova);
+    await this.alterarSenhaService.execute(id, senha_antiga, senha_nova);
 
-      return { message: 'Senha alterada com sucesso!' };
-    } catch (error) {
-      throw new HttpException('Erro ao alterar senha', HttpStatus.BAD_REQUEST);
-    }
+    return { message: 'Senha alterada com sucesso!' };
   }
 
   @Post('alterar-dados')
@@ -119,19 +107,15 @@ export class AuthController {
     @Req() req: RequestCustom,
     @Body() input: AlterarDadosAutenticacaoDto,
   ) {
-    try {
-      const id = req.usuario?.id ?? '';
-      await this.alterarDadosAutenticacaoService.execute(id, {
-        nomeCompleto: input.nome_completo,
-        nomeUsuario: input.nome_usuario,
-        email: input.email,
-        telefone: input.telefone,
-      });
+    const id = req.usuario?.id ?? '';
+    await this.alterarDadosAutenticacaoService.execute(id, {
+      nomeCompleto: input.nome_completo,
+      nomeUsuario: input.nome_usuario,
+      email: input.email,
+      telefone: input.telefone,
+    });
 
-      return { message: 'Dados alterados com sucesso!' };
-    } catch (error) {
-      throw new HttpException('Erro ao alterar dados', HttpStatus.BAD_REQUEST);
-    }
+    return { message: 'Dados alterados com sucesso!' };
   }
 
   @Post('solicitar-verificacao-email')
@@ -157,35 +141,21 @@ export class AuthController {
     @Req() req: RequestCustom,
     @Body() input: VerificarEmailDto,
   ) {
-    try {
-      await this.verificacaoEmailService.verificar(input.token);
+    await this.verificacaoEmailService.verificar(input.token);
 
-      return { message: 'Email verificado com sucesso!' };
-    } catch (error) {
-      throw new HttpException(
-        'Erro ao verificar email',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return { message: 'Email verificado com sucesso!' };
   }
 
   @Post('esqueci-minha-senha')
   @HttpCode(HttpStatus.OK)
   @Public()
   async esqueciMinhaSenha(@Body() { email }: EsqueciMinhaSenhaDto) {
-    try {
-      await this.esqueciMinhaSenhaService.execute(email);
+    await this.esqueciMinhaSenhaService.execute(email);
 
-      return {
-        message:
-          'Um email de recuperação de senha foi enviado para o endereço fornecido. Por favor, verifique sua caixa de entrada e siga as instruções para redefinir sua senha.',
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Erro ao solicitar recuperação de senha',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return {
+      message:
+        'Um email de recuperação de senha foi enviado para o endereço fornecido. Por favor, verifique sua caixa de entrada e siga as instruções para redefinir sua senha.',
+    };
   }
 
   @Get('recuperar-minha-senha')
@@ -193,19 +163,12 @@ export class AuthController {
   @Public()
   @ApiQuery({ name: 'token', type: String })
   async recuperarSenha(@Query('token') token: string) {
-    try {
-      const { codigo } = await this.recuperarMinhaSenhaService.execute(token);
+    const { codigo } = await this.recuperarMinhaSenhaService.execute(token);
 
-      return {
-        message: 'Código para redefinição de senha',
-        codigo,
-      };
-    } catch (e) {
-      throw new HttpException(
-        'Erro ao recuperar a senha',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return {
+      message: 'Código para redefinição de senha',
+      codigo,
+    };
   }
 
   @Post('redefinir-minha-senha')
@@ -214,16 +177,9 @@ export class AuthController {
   async redefinirMinhaSenha(@Body() input: RedefinirMinhaSenhaDto) {
     const { email, codigo, nova_senha } = input;
 
-    try {
-      await this.redefinirSenhaService.execute(email, codigo, nova_senha);
+    await this.redefinirSenhaService.execute(email, codigo, nova_senha);
 
-      return { message: 'Senha atualizada com sucesso.' };
-    } catch (e) {
-      throw new HttpException(
-        'Erro ao redefinir a senha',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return { message: 'Senha atualizada com sucesso.' };
   }
 
   @Get('google')
@@ -237,17 +193,13 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuardPassport('google'))
   async googleAuthRedirect(@Req() req) {
-    try {
-      return await this.loginProviderService.execute(req.user.usuarioId);
+    return await this.loginProviderService.execute(req.user.usuarioId);
 
-      // return res.redirect(
-      //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
-      //     result,
-      //   )}`,
-      // );
-    } catch (error) {
-      throw new HttpException('Erro ao logar', HttpStatus.BAD_REQUEST);
-    }
+    // return res.redirect(
+    //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
+    //     result,
+    //   )}`,
+    // );
   }
 
   @Get('github')
@@ -261,16 +213,12 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuardPassport('github'))
   async githubAuthRedirect(@Req() req, @Res() res: Response) {
-    try {
-      return await this.loginProviderService.execute(req.user.usuarioId);
+    return await this.loginProviderService.execute(req.user.usuarioId);
 
-      // return res.redirect(
-      //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
-      //     result,
-      //   )}`,
-      // );
-    } catch (error) {
-      throw new HttpException('Erro ao logar', HttpStatus.BAD_REQUEST);
-    }
+    // return res.redirect(
+    //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
+    //     result,
+    //   )}`,
+    // );
   }
 }
