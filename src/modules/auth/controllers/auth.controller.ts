@@ -64,22 +64,44 @@ export class AuthController {
   @Post('logar')
   @HttpCode(HttpStatus.OK)
   loginSenha(@Body() input: LoginSenhaDto) {
-    return this.loginSenhaService.execute(input.login, input.senha);
+    try {
+      return this.loginSenhaService.execute(input.login, input.senha);
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao logar',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Public()
   @Post('registrar')
   @HttpCode(HttpStatus.OK)
   async registerEmailTelefoneSenha(@Body() input: RegisterEmailSenhaDto) {
-    await this.registrarEmailTelefoneSenhaService.execute({
-      nomeCompleto: input.nome_completo,
-      nomeUsuario: input.nome_usuario,
-      email: input.email,
-      telefone: input.telefone,
-      senhaHash: input.senha,
-    });
+    try {
+      await this.registrarEmailTelefoneSenhaService.execute({
+        nomeCompleto: input.nome_completo,
+        nomeUsuario: input.nome_usuario,
+        email: input.email,
+        telefone: input.telefone,
+        senhaHash: input.senha,
+      });
 
-    return { message: 'Registrado com sucesso!' };
+      return { message: 'Registrado com sucesso!' };
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao registrar',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('alterar-senha')
@@ -89,15 +111,26 @@ export class AuthController {
     @Req() req: RequestCustom,
     @Body() input: AlterarSenhaDto,
   ) {
-    const {
-      id = '',
-      senha_antiga,
-      senha_nova,
-    } = { id: req.usuario?.id, ...input };
+    try {
+      const {
+        id = '',
+        senha_antiga,
+        senha_nova,
+      } = { id: req.usuario?.id, ...input };
 
-    await this.alterarSenhaService.execute(id, senha_antiga, senha_nova);
+      await this.alterarSenhaService.execute(id, senha_antiga, senha_nova);
 
-    return { message: 'Senha alterada com sucesso!' };
+      return { message: 'Senha alterada com sucesso!' };
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao alterar senha ',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('alterar-dados')
@@ -107,15 +140,26 @@ export class AuthController {
     @Req() req: RequestCustom,
     @Body() input: AlterarDadosAutenticacaoDto,
   ) {
-    const id = req.usuario?.id ?? '';
-    await this.alterarDadosAutenticacaoService.execute(id, {
-      nomeCompleto: input.nome_completo,
-      nomeUsuario: input.nome_usuario,
-      email: input.email,
-      telefone: input.telefone,
-    });
+    try {
+      const id = req.usuario?.id ?? '';
+      await this.alterarDadosAutenticacaoService.execute(id, {
+        nomeCompleto: input.nome_completo,
+        nomeUsuario: input.nome_usuario,
+        email: input.email,
+        telefone: input.telefone,
+      });
 
-    return { message: 'Dados alterados com sucesso!' };
+      return { message: 'Dados alterados com sucesso!' };
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao alterar dados',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('solicitar-verificacao-email')
@@ -126,10 +170,14 @@ export class AuthController {
       await this.verificacaoEmailService.solicitar(req.usuario?.id ?? '');
 
       return { message: 'Email enviado com sucesso!' };
-    } catch (error) {
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
       throw new HttpException(
         'Erro ao solicitar verificação de email',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -141,21 +189,42 @@ export class AuthController {
     @Req() req: RequestCustom,
     @Body() input: VerificarEmailDto,
   ) {
-    await this.verificacaoEmailService.verificar(input.token);
+    try {
+      await this.verificacaoEmailService.verificar(input.token);
+      return { message: 'Email verificado com sucesso!' };
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
 
-    return { message: 'Email verificado com sucesso!' };
+      throw new HttpException(
+        'Erro ao verificar email',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('esqueci-minha-senha')
   @HttpCode(HttpStatus.OK)
   @Public()
   async esqueciMinhaSenha(@Body() { email }: EsqueciMinhaSenhaDto) {
-    await this.esqueciMinhaSenhaService.execute(email);
+    try {
+      await this.esqueciMinhaSenhaService.execute(email);
 
-    return {
-      message:
-        'Um email de recuperação de senha foi enviado para o endereço fornecido. Por favor, verifique sua caixa de entrada e siga as instruções para redefinir sua senha.',
-    };
+      return {
+        message:
+          'Um email de recuperação de senha foi enviado para o endereço fornecido. Por favor, verifique sua caixa de entrada e siga as instruções para redefinir sua senha.',
+      };
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao solicitar recuperação de senha',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get('recuperar-minha-senha')
@@ -163,23 +232,45 @@ export class AuthController {
   @Public()
   @ApiQuery({ name: 'token', type: String })
   async recuperarSenha(@Query('token') token: string) {
-    const { codigo } = await this.recuperarMinhaSenhaService.execute(token);
+    try {
+      const { codigo } = await this.recuperarMinhaSenhaService.execute(token);
 
-    return {
-      message: 'Código para redefinição de senha',
-      codigo,
-    };
+      return {
+        message: 'Código para redefinição de senha',
+        codigo,
+      };
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao recuperar a senha',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('redefinir-minha-senha')
   @HttpCode(HttpStatus.OK)
   @Public()
   async redefinirMinhaSenha(@Body() input: RedefinirMinhaSenhaDto) {
-    const { email, codigo, nova_senha } = input;
+    try {
+      const { email, codigo, nova_senha } = input;
 
-    await this.redefinirSenhaService.execute(email, codigo, nova_senha);
+      await this.redefinirSenhaService.execute(email, codigo, nova_senha);
 
-    return { message: 'Senha atualizada com sucesso.' };
+      return { message: 'Senha atualizada com sucesso.' };
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao redefinir a senha',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get('google')
@@ -193,13 +284,24 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuardPassport('google'))
   async googleAuthRedirect(@Req() req) {
-    return await this.loginProviderService.execute(req.user.usuarioId);
+    try {
+      return await this.loginProviderService.execute(req.user.usuarioId);
 
-    // return res.redirect(
-    //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
-    //     result,
-    //   )}`,
-    // );
+      // return res.redirect(
+      //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
+      //     result,
+      //   )}`,
+      // );
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao autenticar com o Google',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get('github')
@@ -213,12 +315,23 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuardPassport('github'))
   async githubAuthRedirect(@Req() req, @Res() res: Response) {
-    return await this.loginProviderService.execute(req.user.usuarioId);
+    try {
+      return await this.loginProviderService.execute(req.user.usuarioId);
 
-    // return res.redirect(
-    //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
-    //     result,
-    //   )}`,
-    // );
+      // return res.redirect(
+      //   `${websiteDomain}${authCallbackUrlWebsite}?access=${JSON.stringify(
+      //     result,
+      //   )}`,
+      // );
+    } catch (error: { status?: string } | any) {
+      if (error?.status) {
+        throw new HttpException(error.message, error?.status);
+      }
+
+      throw new HttpException(
+        'Erro ao autenticar com o Github',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
