@@ -7,11 +7,14 @@
         "codigo",
         "dtos",
         "Expiracao",
+        "middlewares",
+        "POSICAO",
         "sessao",
         "soliciatacao",
         "solicitacao",
         "unidecode",
         "usuarios",
-        "verificacao"
+        "verificacao",
+        "whitecloak"
     ]
 }

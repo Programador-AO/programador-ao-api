@@ -5,8 +5,9 @@ import * as hbs from 'nodemailer-express-handlebars';
 
 const env = process.env.NODE_ENV ?? '';
 const testAccount = async (): Promise<TestAccount | null> => {
-  const usuario = await createTestAccount();
-  return env === 'test' ? usuario : null;
+  const usuario = env === 'test' ? await createTestAccount() : null;
+
+  return usuario;
 };
 
 const config = {

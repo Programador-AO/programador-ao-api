@@ -12,11 +12,14 @@ import appConfig from './config/app.config';
 import { PrismaService } from './database/prisma/prisma.service';
 
 async function bootstrap() {
-  const { port, appName, apiVersion, listaBranca } = appConfig();
+  const { port, appName, apiVersion, listaBranca, environment } = appConfig();
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
+    logger: environment === 'production' ? ['error', 'warn'] : undefined,
   });
 
+  app.use(helmet());
+  app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
     origin: (origin, callback) => {
       if (listaBranca.includes(origin) || !origin) callback(null, true);
@@ -25,26 +28,23 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.use(helmet());
-
-  app.useGlobalPipes(new ValidationPipe());
-
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);
 
-  app.setGlobalPrefix(apiVersion);
   app.enableVersioning({
+    defaultVersion: apiVersion,
     type: VersioningType.URI,
+    prefix: 'v',
   });
 
   const config = new DocumentBuilder()
     .setTitle(appName)
     .setDescription('API da plataforma Programador AO')
-    .setVersion(apiVersion)
+    .setVersion(`v${apiVersion}`)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/', app, document);
+  SwaggerModule.setup('/docs', app, document);
 
   await app.listen(port);
 }
