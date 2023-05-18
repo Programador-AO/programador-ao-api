@@ -13,9 +13,6 @@ export class ControllerUsuarioMapper {
       avatar: usuario?.avatar,
       tipo: usuario?.tipo,
       activo: usuario?.activo,
-      created_at: usuario?.createdAt,
-      updated_at: usuario?.updatedAt,
-      deleted_at: usuario?.deletedAt,
     };
   }
 }

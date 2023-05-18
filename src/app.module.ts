@@ -1,16 +1,21 @@
-import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { UsuarioModule } from './modules/usuarios/usuario-module';
-import { FirebaseAuthModule } from '@whitecloak/nestjs-passport-firebase';
-import { APP_GUARD } from '@nestjs/core';
+import { RedirectHomeMiddleware } from './middlewares/redirect-home.middleware';
 
-import firebaseConfig from './config/firebase.config';
 import appConfig from './config/app.config';
+import securityConfig from './config/security.config';
 
 @Module({
   imports: [
@@ -18,14 +23,7 @@ import appConfig from './config/app.config';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 10,
-    }),
-    FirebaseAuthModule.register({
-      audience: firebaseConfig().projectId,
-      issuer: firebaseConfig().firebaseIssuer,
-    }),
+    ThrottlerModule.forRoot(securityConfig()),
     DevtoolsModule.register({
       http: appConfig().environment !== 'production',
     }),
@@ -41,4 +39,10 @@ import appConfig from './config/app.config';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(RedirectHomeMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.GET });
+  }
+}
